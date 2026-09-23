@@ -140,3 +140,50 @@ describe("cart quantity bounds (M5)", () => {
     expect(cart.items[0].quantity).toBe(5);
   });
 });
+
+describe("PUT /cart/:itemId ownership (NS-M1)", () => {
+  let app: FastifyInstance;
+  let alice: Awaited<ReturnType<typeof registerUser>>;
+  let bob: Awaited<ReturnType<typeof registerUser>>;
+
+  beforeEach(async () => {
+    app = await freshApp();
+    alice = await registerUser(app);
+    bob = await registerUser(app);
+  });
+
+  // Sibling of the C2 DELETE guard. Round-2 mutation "e" removed
+  // `|| item.userId !== userId` from PUT and every test still passed.
+  it("returns 404 when a user updates another user's cart item, and the owner's quantity is unchanged", async () => {
+    const added = await addItem(app, alice.token, "p-001", 3);
+    expect(added.statusCode).toBe(200);
+    const aliceItem = (added.json() as CartBody).items[0];
+
+    const res = await app.inject({
+      method: "PUT",
+      url: `/cart/${aliceItem.id}`,
+      headers: bearer(bob.token),
+      payload: { quantity: 9 },
+    });
+    expect(res.statusCode).toBe(404);
+
+    const aliceCart = await getCart(app, alice.token);
+    expect(aliceCart.items).toEqual([
+      expect.objectContaining({ id: aliceItem.id, personaId: "p-001", quantity: 3 }),
+    ]);
+  });
+
+  it("lets the owner update their own cart item", async () => {
+    const added = await addItem(app, alice.token, "p-001", 3);
+    const aliceItem = (added.json() as CartBody).items[0];
+
+    const res = await app.inject({
+      method: "PUT",
+      url: `/cart/${aliceItem.id}`,
+      headers: bearer(alice.token),
+      payload: { quantity: 9 },
+    });
+    expect(res.statusCode).toBe(200);
+    expect((await getCart(app, alice.token)).items[0].quantity).toBe(9);
+  });
+});
