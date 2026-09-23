@@ -14,6 +14,36 @@ function getToken(): string | null {
   return localStorage.getItem("auth_token");
 }
 
+/**
+ * Turn an API `error` field into readable text. Handles plain strings and
+ * zod `flatten()` objects ({ formErrors, fieldErrors }); returns undefined
+ * for anything else so the caller can fall back to a status message.
+ */
+function errorMessage(error: unknown): string | undefined {
+  if (typeof error === "string") return error || undefined;
+  if (!error || typeof error !== "object") return undefined;
+
+  const { formErrors, fieldErrors } = error as {
+    formErrors?: unknown;
+    fieldErrors?: unknown;
+  };
+  const parts: string[] = [];
+
+  if (Array.isArray(formErrors)) {
+    parts.push(...formErrors.filter((m): m is string => typeof m === "string"));
+  }
+  if (fieldErrors && typeof fieldErrors === "object") {
+    for (const [field, messages] of Object.entries(fieldErrors)) {
+      if (!Array.isArray(messages)) continue;
+      for (const m of messages) {
+        if (typeof m === "string") parts.push(`${field}: ${m}`);
+      }
+    }
+  }
+
+  return parts.length > 0 ? parts.join("; ") : undefined;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -37,7 +67,7 @@ async function request<T>(
     const body = await response.json().catch(() => ({}));
     throw new ApiError(
       response.status,
-      body.error ?? `Request failed: ${response.status}`,
+      errorMessage(body?.error) ?? `Request failed: ${response.status}`,
     );
   }
 
