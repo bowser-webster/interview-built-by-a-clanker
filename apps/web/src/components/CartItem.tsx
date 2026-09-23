@@ -39,6 +39,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
       <div className="flex items-center gap-2">
         <button
           onClick={() => onUpdateQuantity(item.quantity - 1)}
+          disabled={item.quantity <= 1}
           className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           -

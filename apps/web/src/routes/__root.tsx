@@ -13,7 +13,8 @@ function RootLayout() {
   const router = useRouter();
 
   const { data: cart } = useQuery({
-    queryKey: ["cart-count"],
+    // Under the ["cart"] prefix so every cart mutation's invalidation refreshes the badge.
+    queryKey: ["cart", "count"],
     queryFn: () => api.get<Cart>("/cart"),
     enabled: !!user,
   });
