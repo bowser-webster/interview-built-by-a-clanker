@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { api, ApiError } from "./api";
+import { api, ApiError, setUnauthorizedHandler } from "./api";
 
 function stubLocalStorage(token: string | null) {
   vi.stubGlobal("localStorage", {
@@ -139,5 +139,38 @@ describe("api request headers (E1)", () => {
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     expect(new Headers(init.headers).get("content-type")).toBe("application/json");
     expect(init.body).toBe(JSON.stringify({ personaId: "p-001", quantity: 1 }));
+  });
+});
+
+
+describe("api 401 notification (E3)", () => {
+  beforeEach(() => {
+    stubLocalStorage("tok-123");
+  });
+
+  afterEach(() => {
+    setUnauthorizedHandler(null);
+    vi.unstubAllGlobals();
+  });
+
+  const unauthorized = () =>
+    new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+
+  it("reports the rejected token when an authenticated request gets a 401", async () => {
+    const handler = vi.fn();
+    setUnauthorizedHandler(handler);
+    stubFetch(unauthorized());
+    await captureError(api.get("/cart"));
+    expect(handler).toHaveBeenCalledWith("tok-123");
+  });
+
+  it("does not report a 401 from /auth/login or /auth/register (wrong credentials)", async () => {
+    const handler = vi.fn();
+    setUnauthorizedHandler(handler);
+    stubFetch(unauthorized());
+    await captureError(api.post("/auth/login", {}));
+    stubFetch(unauthorized());
+    await captureError(api.post("/auth/register", {}));
+    expect(handler).not.toHaveBeenCalled();
   });
 });
