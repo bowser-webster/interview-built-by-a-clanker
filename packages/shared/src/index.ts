@@ -28,6 +28,11 @@ export {
 } from "./schemas/cart.js";
 
 export {
+  addFavoriteSchema,
+  type AddFavoriteInput,
+} from "./schemas/favorite.js";
+
+export {
   checkoutSchema,
   orderSchema,
   type CheckoutInput,
