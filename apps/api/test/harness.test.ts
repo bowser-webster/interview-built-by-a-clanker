@@ -15,10 +15,15 @@ describe("test harness", () => {
 
   it("gives each freshApp isolated in-memory state", async () => {
     app = await freshApp();
-    const first = await registerUser(app, { email: "same@example.com" });
+    await registerUser(app, { email: "same@example.com" });
     await app.close();
     app = await freshApp();
-    const second = await registerUser(app, { email: "same@example.com" });
-    expect(first.id).toBe(second.id);
+    // A shared store would reject the repeat email with 409.
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/register",
+      payload: { username: "sameuser", email: "same@example.com", password: "secret123" },
+    });
+    expect(res.statusCode).toBe(201);
   });
 });
