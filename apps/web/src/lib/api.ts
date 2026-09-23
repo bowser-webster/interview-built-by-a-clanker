@@ -15,6 +15,20 @@ function getToken(): string | null {
 }
 
 /**
+ * Called when a request that carried a token gets a 401, with the token that
+ * was rejected. AuthProvider registers this to end the session.
+ */
+type UnauthorizedHandler = (rejectedToken: string) => void;
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): void {
+  unauthorizedHandler = handler;
+}
+
+// A 401 from these means "wrong credentials", not "your session expired".
+const CREDENTIAL_PATHS = new Set(["/auth/login", "/auth/register"]);
+
+/**
  * Turn an API `error` field into readable text. Handles plain strings and
  * zod `flatten()` objects ({ formErrors, fieldErrors }); returns undefined
  * for anything else so the caller can fall back to a status message.
@@ -64,6 +78,10 @@ async function request<T>(
     ...options,
     headers,
   });
+
+  if (response.status === 401 && token && !CREDENTIAL_PATHS.has(path)) {
+    unauthorizedHandler?.(token);
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
