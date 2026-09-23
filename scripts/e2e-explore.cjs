@@ -83,8 +83,12 @@ function note(area, what, ok, detail = "") {
     note("browse", "Clear filters restores all personas and empties search box", cleared === 15 && boxVal === "", `${cleared} cards, box='${boxVal}'`);
     await page.getByRole("button", { name: "Enterprise", exact: true }).click();
     await page.waitForTimeout(800);
-    const ent = await main();
-    note("browse", "Tier=Enterprise filter shows only Enterprise", ent.includes("Enterprise") && !ent.includes("Starter\n"), new URL(page.url()).search);
+    // Read tier badges from the cards only (the filter panel itself has Starter/Pro buttons).
+    const tiers = await page
+      .locator("main a[href^='/personas/']")
+      .evaluateAll((as) => as.map((a) => a.innerText.split("\n").filter(Boolean)[1]));
+    note("browse", "Tier=Enterprise filter shows only Enterprise",
+      tiers.length > 0 && tiers.every((t) => t === "Enterprise"), `${tiers.length} cards: ${[...new Set(tiers)].join(",")}`);
     for (const [v, first] of [["price-desc", "Compliance Carl"], ["rating-desc", null], ["name-asc", null]]) {
       await page.locator("select").selectOption(v);
       await page.waitForTimeout(800);
