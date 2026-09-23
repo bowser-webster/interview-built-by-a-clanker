@@ -47,6 +47,20 @@ export async function cartRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: "Persona not found" });
     }
 
+    // db.cart.add merges into an existing line; the merged quantity must
+    // respect the same bound as a direct update.
+    const existing = db.cart
+      .getByUserId(userId)
+      .find((item) => item.personaId === personaId);
+    if (existing) {
+      const merged = updateCartItemSchema.safeParse({
+        quantity: existing.quantity + quantity,
+      });
+      if (!merged.success) {
+        return reply.status(400).send({ error: merged.error.flatten() });
+      }
+    }
+
     db.cart.add(userId, personaId, quantity);
     return enrichCartItems(userId);
   });
@@ -75,7 +89,8 @@ export async function cartRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id: userId } = request.user as { id: string };
       const item = db.cart.getById(request.params.itemId);
-      if (!item) {
+      // 404 (not 403) for other users' items so ids don't leak existence.
+      if (!item || item.userId !== userId) {
         return reply.status(404).send({ error: "Cart item not found" });
       }
 
