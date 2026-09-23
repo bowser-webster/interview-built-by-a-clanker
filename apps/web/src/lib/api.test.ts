@@ -1,0 +1,105 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { api, ApiError } from "./api";
+
+function stubLocalStorage(token: string | null) {
+  vi.stubGlobal("localStorage", {
+    getItem: () => token,
+    setItem: () => {},
+    removeItem: () => {},
+    clear: () => {},
+  });
+}
+
+function stubFetch(response: Response) {
+  const fetchMock = vi.fn(
+    async (_input: RequestInfo | URL, _init?: RequestInit) => response,
+  );
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+async function captureError(p: Promise<unknown>): Promise<ApiError> {
+  try {
+    await p;
+  } catch (err) {
+    return err as ApiError;
+  }
+  throw new Error("expected request to reject");
+}
+
+describe("api request error handling", () => {
+  beforeEach(() => {
+    stubLocalStorage(null);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("turns a zod flatten() validation error into a readable message", async () => {
+    stubFetch(
+      new Response(
+        JSON.stringify({
+          error: {
+            formErrors: [],
+            fieldErrors: {
+              username: ["String must contain at least 3 character(s)"],
+            },
+          },
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+
+    const err = await captureError(api.post("/api/auth/register", {}));
+
+    expect(err).toBeInstanceOf(ApiError);
+    expect(err.status).toBe(400);
+    expect(err.message).toContain(
+      "String must contain at least 3 character(s)",
+    );
+    expect(err.message).not.toContain("[object Object]");
+  });
+
+  it("keeps a string error message as-is", async () => {
+    stubFetch(
+      new Response(JSON.stringify({ error: "Email already registered" }), {
+        status: 409,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+
+    const err = await captureError(api.post("/api/auth/register", {}));
+
+    expect(err).toBeInstanceOf(ApiError);
+    expect(err.status).toBe(409);
+    expect(err.message).toBe("Email already registered");
+  });
+
+  it("falls back to a status message for a non-JSON body", async () => {
+    stubFetch(new Response("Internal Server Error", { status: 500 }));
+
+    const err = await captureError(api.get("/api/personas"));
+
+    expect(err).toBeInstanceOf(ApiError);
+    expect(err.status).toBe(500);
+    expect(err.message).toBe("Request failed: 500");
+  });
+
+  it("sends the stored token as a Bearer Authorization header", async () => {
+    stubLocalStorage("tok-123");
+    const fetchMock = stubFetch(
+      new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+
+    await api.get("/api/cart");
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const init = fetchMock.mock.calls[0]![1]!;
+    const headers = init.headers as Record<string, string>;
+    expect(headers["Authorization"]).toBe("Bearer tok-123");
+  });
+});

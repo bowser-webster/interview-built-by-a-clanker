@@ -6,7 +6,7 @@ import { PersonaCard } from "~/components/PersonaCard";
 import { SearchBar } from "~/components/SearchBar";
 import { FilterPanel } from "~/components/FilterPanel";
 
-interface SearchParams {
+export interface SearchParams {
   q?: string;
   specialty?: string;
   tier?: string;
