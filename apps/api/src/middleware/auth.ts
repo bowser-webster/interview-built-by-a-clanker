@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 
-const ENFORCE_AUTH = process.env.ENFORCE_AUTH === "true";
+// Auth is enforced unless explicitly disabled with ENFORCE_AUTH=false.
+const ENFORCE_AUTH = process.env.ENFORCE_AUTH !== "false";
 
 export async function authenticate(
   request: FastifyRequest,

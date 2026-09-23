@@ -1,18 +1,31 @@
+import { randomBytes, randomUUID, scrypt, timingSafeEqual } from "node:crypto";
+import { promisify } from "node:util";
 import type { FastifyInstance } from "fastify";
 import { registerSchema, loginSchema, type AuthResponse } from "@acme/shared";
 import { db } from "../db.js";
 import { authenticate } from "../middleware/auth.js";
 
-let userCounter = 0;
+const scryptAsync = promisify(scrypt) as (
+  password: string,
+  salt: Buffer,
+  keylen: number
+) => Promise<Buffer>;
 
-function simpleHash(password: string): string {
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0;
-  }
-  return `hashed_${hash}`;
+const KEY_LENGTH = 64;
+
+/** Salted scrypt hash, stored as `scrypt$<salt hex>$<key hex>`. */
+async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16);
+  const key = await scryptAsync(password, salt, KEY_LENGTH);
+  return `scrypt$${salt.toString("hex")}$${key.toString("hex")}`;
+}
+
+async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  const [scheme, saltHex, keyHex] = stored.split("$");
+  if (scheme !== "scrypt" || !saltHex || !keyHex) return false;
+  const expected = Buffer.from(keyHex, "hex");
+  const actual = await scryptAsync(password, Buffer.from(saltHex, "hex"), expected.length);
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
 export async function authRoutes(app: FastifyInstance) {
@@ -28,12 +41,14 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.status(409).send({ error: "Email already registered" });
     }
 
-    const id = `user-${++userCounter}`;
+    // Random ids: a counter restarts at 1 on boot and would hand an old
+    // token's id to whoever registers next.
+    const id = `user-${randomUUID()}`;
     const user = db.users.create({
       id,
       username,
       email,
-      passwordHash: simpleHash(password),
+      passwordHash: await hashPassword(password),
     });
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
@@ -54,14 +69,14 @@ export async function authRoutes(app: FastifyInstance) {
     const { email, password } = parsed.data;
     const user = db.users.getByEmail(email);
 
-    if (!user || user.passwordHash !== simpleHash(password)) {
+    if (!user || !(await verifyPassword(password, user.passwordHash))) {
       return reply.status(401).send({ error: "Invalid email or password" });
     }
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
-    const response = {
+    const response: AuthResponse = {
       token,
-      user: { id: user.id, email: user.email },
+      user: { id: user.id, username: user.username, email: user.email },
     };
 
     return response;
