@@ -103,3 +103,41 @@ describe("api request error handling", () => {
     expect(headers["Authorization"]).toBe("Bearer tok-123");
   });
 });
+
+describe("api request headers (E1)", () => {
+  beforeEach(() => {
+    stubLocalStorage("tok-123");
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function sentHeaders(fetchMock: ReturnType<typeof stubFetch>) {
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    return new Headers(init.headers);
+  }
+
+  // Fastify 5 rejects an empty body declared as JSON with 400 FST_ERR_CTP_EMPTY_JSON_BODY.
+  it("sends no Content-Type on a bodyless DELETE", async () => {
+    const fetchMock = stubFetch(new Response(JSON.stringify({ success: true }), { status: 200 }));
+    await api.delete("/favorites/p-001");
+    const headers = sentHeaders(fetchMock);
+    expect(headers.has("content-type")).toBe(false);
+    expect(headers.get("authorization")).toBe("Bearer tok-123");
+  });
+
+  it("sends no Content-Type on a bodyless GET", async () => {
+    const fetchMock = stubFetch(new Response("[]", { status: 200 }));
+    await api.get("/personas");
+    expect(sentHeaders(fetchMock).has("content-type")).toBe(false);
+  });
+
+  it("still sends Content-Type: application/json when there is a JSON body", async () => {
+    const fetchMock = stubFetch(new Response("{}", { status: 200 }));
+    await api.post("/cart", { personaId: "p-001", quantity: 1 });
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect(new Headers(init.headers).get("content-type")).toBe("application/json");
+    expect(init.body).toBe(JSON.stringify({ personaId: "p-001", quantity: 1 }));
+  });
+});

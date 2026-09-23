@@ -49,8 +49,10 @@ async function request<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const token = getToken();
+  // Only declare JSON when there is a body: Fastify rejects an empty body sent
+  // as application/json, which broke every DELETE.
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(options.body !== undefined ? { "Content-Type": "application/json" } : {}),
     ...((options.headers as Record<string, string>) ?? {}),
   };
 

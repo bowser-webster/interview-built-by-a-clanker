@@ -37,6 +37,10 @@ export async function authRoutes(app: FastifyInstance) {
 
     const { username, email, password } = parsed.data;
 
+    // Hash before the duplicate check so check-then-create runs without an
+    // await in between; otherwise concurrent registrations both pass the check.
+    const passwordHash = await hashPassword(password);
+
     if (db.users.getByEmail(email)) {
       return reply.status(409).send({ error: "Email already registered" });
     }
@@ -44,12 +48,7 @@ export async function authRoutes(app: FastifyInstance) {
     // Random ids: a counter restarts at 1 on boot and would hand an old
     // token's id to whoever registers next.
     const id = `user-${randomUUID()}`;
-    const user = db.users.create({
-      id,
-      username,
-      email,
-      passwordHash: await hashPassword(password),
-    });
+    const user = db.users.create({ id, username, email, passwordHash });
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
     const response: AuthResponse = {
