@@ -1,0 +1,231 @@
+Mutation run 2026-09-23T17:53:37.250Z @ c2f0c62
+BASELINE @acme/api: exit=0 total=49 failed=0 
+BASELINE @acme/web: exit=0 total=4 failed=0 
+
+[a] minPrice >= -> >
+  at apps/api/src/db.ts:365 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x personas.test.ts > GET /personas price filters (H2) minPrice is inclusive at the boundary
+  reverted: yes
+
+[b] maxPrice <= -> <
+  at apps/api/src/db.ts:369 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x personas.test.ts > GET /personas price filters (H2) minPrice=50 and maxPrice=49.99 are disjoint and together cover all 15 personas
+  reverted: yes
+
+[c] maxPrice <= -> >=
+  at apps/api/src/db.ts:369 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=2
+  => KILLED
+     x personas.test.ts > GET /personas price filters (H2) minPrice=50 and maxPrice=49.99 are disjoint and together cover all 15 personas
+     x personas.test.ts > GET /personas price filters (H2) minPrice and maxPrice together return exactly the personas in range
+  reverted: yes
+
+[d] DELETE drop ownership check
+  at apps/api/src/routes/cart.ts:93 (occurrence 2/2); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x cart.test.ts > DELETE /cart/:itemId ownership (C2) returns 404 when a user deletes another user's cart item, and the owner's item survives
+  reverted: yes
+
+[e] PUT drop ownership check
+  at apps/api/src/routes/cart.ts:78 (occurrence 1/2); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[f] checkout: remove clearForUser
+  at apps/api/src/routes/checkout.ts:51 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=2
+  => KILLED
+     x checkout.test.ts > POST /checkout clears the cart (H3) empties the user's cart after a successful checkout
+     x checkout.test.ts > POST /checkout clears the cart (H3) rejects a second checkout with 400 Cart is empty
+  reverted: yes
+
+[g1] checkout: clearForUser moved after empty-check, before building items (entries already snapshotted)
+  at apps/api/src/routes/checkout.ts:23 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[g2] checkout: clearForUser moved before reading cart entries
+  at apps/api/src/routes/checkout.ts:16 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=4
+  => KILLED
+     x checkout.test.ts > POST /checkout clears the cart (H3) empties the user's cart after a successful checkout
+     x checkout.test.ts > POST /checkout clears the cart (H3) rejects a second checkout with 400 Cart is empty
+     x checkout.test.ts > POST /checkout clears the cart (H3) returns an order that snapshots the cart's items, quantities and total
+     x checkout.test.ts > POST /checkout clears the cart (H3) does not touch another user's cart
+  reverted: yes
+
+[h] auth default back to === "true"
+  at apps/api/src/middleware/auth.ts:4 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=10
+  => KILLED
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) accepts a valid token on GET /cart and GET /auth/me
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for GET /cart without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for POST /cart without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for PUT /cart/cart-1 without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for DELETE /cart/cart-1 without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for GET /favorites without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for POST /favorites without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for DELETE /favorites/persona-1 without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for POST /checkout without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for GET /auth/me without a token
+  reverted: yes
+
+[i] remove reply.status(401).send
+  at apps/api/src/middleware/auth.ts:17 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=11
+  => KILLED
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for GET /cart without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for POST /cart without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for PUT /cart/cart-1 without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for DELETE /cart/cart-1 without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for GET /favorites without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for POST /favorites without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for DELETE /favorites/persona-1 without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for POST /checkout without a token
+     x auth.test.ts > auth C1: auth is enforced by default (ENFORCE_AUTH unset) returns 401 (never 500) for GET /auth/me without a token
+     x auth.test.ts > auth C3: tokens cannot be forged and expire rejects a token hand-signed with the old hard-coded secret
+     x auth.test.ts > auth M2: tokens do not survive a restart onto another user rejects a token issued by a previous instance (per-boot secret)
+  reverted: yes
+
+[j] verifyPassword always true
+  at apps/api/src/routes/auth.ts:28 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x auth.test.ts > auth H4: passwords are salted and collision-resistant rejects a colliding wrong password and accepts the right one
+  reverted: yes
+
+[k] login drops username
+  at apps/api/src/routes/auth.ts:79 (occurrence 2/2); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x auth.test.ts > auth M1: login response matches AuthResponse returns the same user shape as register, including username
+  reverted: yes
+
+[l] fixed salt for every user
+  at apps/api/src/routes/auth.ts:18 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x auth.test.ts > auth H4: passwords are salted and collision-resistant stores different hashes for two users with the same password
+  reverted: yes
+
+[m] CORS methods drop DELETE
+  at apps/api/src/app.ts:17 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x cors.test.ts > H1: CORS preflight allows every method the web client uses, including DELETE
+  reverted: yes
+
+[n] remove sign expiresIn
+  at apps/api/src/app.ts:27 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x auth.test.ts > auth C3: tokens cannot be forged and expire issues tokens that carry an exp claim
+  reverted: yes
+
+[o] per-boot secret -> legacy literal
+  at apps/api/src/app.ts:24 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=2
+  => KILLED
+     x auth.test.ts > auth C3: tokens cannot be forged and expire rejects a token hand-signed with the old hard-coded secret
+     x auth.test.ts > auth M2: tokens do not survive a restart onto another user rejects a token issued by a previous instance (per-boot secret)
+  reverted: yes
+
+[p] shared cart max 99 -> 100 (both schemas)
+  at packages/shared/src/schemas/cart.ts:14 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=2
+  => KILLED
+     x cart.test.ts > cart quantity bounds (M5) rejects POST quantity 100 with 400
+     x cart.test.ts > cart quantity bounds (M5) rejects PUT quantity 100 with 400 and leaves the line unchanged
+  reverted: yes
+
+[q] POST /cart remove merge-over-cap check
+  at apps/api/src/routes/cart.ts:55 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x cart.test.ts > cart quantity bounds (M5) rejects a POST that would merge the existing line past 99, leaving the line unchanged
+  reverted: yes
+
+[r] personas remove min>max check
+  at apps/api/src/routes/personas.ts:16 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x personas.test.ts > GET /personas query validation (M3) rejects minPrice greater than maxPrice with 400
+  reverted: yes
+
+[s] personas skip schema parse (raw query)
+  at apps/api/src/routes/personas.ts:7 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=4
+  => KILLED
+     x personas.test.ts > GET /personas query validation (M3) rejects a repeated q param with 400 instead of crashing
+     x personas.test.ts > GET /personas query validation (M3) rejects a non-numeric maxPrice with 400
+     x personas.test.ts > GET /personas query validation (M3) rejects an unknown sort with 400
+     x personas.test.ts > GET /personas query validation (M3) rejects an unknown specialty with 400
+  reverted: yes
+
+[t] favorites skip schema parse
+  at apps/api/src/routes/favorites.ts:26 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=4
+  => KILLED
+     x favorites.test.ts > POST /favorites body validation (M4) rejects a request with no body with 400 instead of crashing
+     x favorites.test.ts > POST /favorites body validation (M4) rejects a JSON null body with 400
+     x favorites.test.ts > POST /favorites body validation (M4) rejects a non-string personaId with 400
+     x favorites.test.ts > POST /favorites body validation (M4) rejects an empty object with 400
+  reverted: yes
+
+[u] cart total unrounded
+  at apps/api/src/routes/cart.ts:25 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[v] rating-desc comparator reversed
+  at apps/api/src/db.ts:381 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[w] cart add merge += -> =
+  at apps/api/src/db.ts:421 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[x] web api.ts revert to body.error ??
+  at apps/web/src/lib/api.ts:70 (occurrence 1/1); pkg=@acme/web; vitest exit=1; tests=4; failed=1
+  => KILLED
+     x api.test.ts > api request error handling turns a zod flatten() validation error into a readable message
+  reverted: yes
+
+[y] web api.ts stop sending Authorization
+  at apps/web/src/lib/api.ts:58 (occurrence 1/1); pkg=@acme/web; vitest exit=1; tests=4; failed=1
+  => KILLED
+     x api.test.ts > api request error handling sends the stored token as a Bearer Authorization header
+  reverted: yes
+
+[z1] POST /cart rejects EVERY merge (merge check always fails)
+  at apps/api/src/routes/cart.ts:59 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[z2] personas: min>max check uses >= (rejects min==max)
+  at apps/api/src/routes/personas.ts:16 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[z3] addFavoriteSchema drops .min(1) (empty id -> 404 not 400)
+  at packages/shared/src/schemas/favorite.ts:4 (occurrence 1/1); pkg=@acme/api; vitest exit=0; tests=49; failed=0
+  => SURVIVED
+  reverted: yes
+
+[z4] checkout clears ALL users' carts
+  at apps/api/src/routes/checkout.ts:51 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x checkout.test.ts > POST /checkout clears the cart (H3) does not touch another user's cart
+  reverted: yes
+
+[z5] web errorMessage ignores formErrors
+  at apps/web/src/lib/api.ts:33 (occurrence 1/1); pkg=@acme/web; vitest exit=0; tests=4; failed=0
+  => SURVIVED
+  reverted: yes
+
+[z6] web errorMessage drops field-name prefix
+  at apps/web/src/lib/api.ts:39 (occurrence 1/1); pkg=@acme/web; vitest exit=0; tests=4; failed=0
+  => SURVIVED
+  reverted: yes
+
+[z7] web errorMessage ignores string errors
+  at apps/web/src/lib/api.ts:23 (occurrence 1/1); pkg=@acme/web; vitest exit=1; tests=4; failed=1
+  => KILLED
+     x api.test.ts > api request error handling keeps a string error message as-is
+  reverted: yes
+
+[z8] cart merge check compares only the incoming quantity
+  at apps/api/src/routes/cart.ts:57 (occurrence 1/1); pkg=@acme/api; vitest exit=1; tests=49; failed=1
+  => KILLED
+     x cart.test.ts > cart quantity bounds (M5) rejects a POST that would merge the existing line past 99, leaving the line unchanged
+  reverted: yes
+
+DONE

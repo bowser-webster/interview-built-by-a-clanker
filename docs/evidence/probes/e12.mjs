@@ -1,0 +1,10 @@
+import { fresh, register, auth } from "./common.mjs";
+const app = await fresh();
+const { body } = await register(app);
+const r1 = await app.inject({ method: "DELETE", url: "/favorites/p1", headers: { ...auth(body.token), "content-type": "application/json" } });
+console.log("Fastify-native empty-body 400:", r1.body);
+const r2 = await app.inject({ method: "POST", url: "/cart", headers: { ...auth(body.token), "content-type": "application/json" }, payload: "{bad json" });
+console.log("Fastify-native bad JSON:", r2.statusCode, r2.body);
+const r3 = await app.inject({ method: "PUT", url: "/cart/x", headers: auth(body.token), payload: { quantity: 100 } });
+console.log("route-level zod 400:", r3.body);
+await app.close();

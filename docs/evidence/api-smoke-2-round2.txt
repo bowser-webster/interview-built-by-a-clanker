@@ -1,0 +1,443 @@
+Smoke run 2026-09-23T17:50:20.227Z
+
+==================== MODE: ENFORCE_AUTH=(unset) ====================
+
+--- Public ---
+health
+  GET /health
+  -> 200 {"status":"ok"}
+all personas
+  GET /personas
+  -> 200 [15 personas] p-001:$49.99:r4.8:Engineering, p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-006:$44.99:r4.3:Product, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-009:$39.99:r4.6:Design, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-012:$34.99:r4.1:Product, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering, p-015:$49.99:r4.4:Product
+minPrice=50
+  GET /personas?minPrice=50
+  -> 200 [10 personas] p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering
+maxPrice=50
+  GET /personas?maxPrice=50
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+minPrice=50&maxPrice=60
+  GET /personas?minPrice=50&maxPrice=60
+  -> 200 [4 personas] p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-007:$59.99:r4.9:Engineering, p-013:$54.99:r4.5:Engineering
+sort=price-asc
+  GET /personas?sort=price-asc
+  -> 200 [15 personas] p-012:$34.99:r4.1:Product, p-009:$39.99:r4.6:Design, p-006:$44.99:r4.3:Product, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-010:$64.99:r4.2:Data, p-005:$69.99:r4.5:Data, p-014:$74.99:r4.3:Engineering, p-008:$79.99:r4.4:DevOps, p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+sort=rating-desc
+  GET /personas?sort=rating-desc
+  -> 200 [15 personas] p-002:$89.99:r4.9:Security, p-007:$59.99:r4.9:Engineering, p-001:$49.99:r4.8:Engineering, p-004:$54.99:r4.7:Design, p-011:$99.99:r4.7:Security, p-003:$59.99:r4.6:DevOps, p-009:$39.99:r4.6:Design, p-005:$69.99:r4.5:Data, p-013:$54.99:r4.5:Engineering, p-008:$79.99:r4.4:DevOps, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-014:$74.99:r4.3:Engineering, p-010:$64.99:r4.2:Data, p-012:$34.99:r4.1:Product
+specialty=Security
+  GET /personas?specialty=Security
+  -> 200 [2 personas] p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+q=rex
+  GET /personas?q=rex
+  -> 200 [1 personas] p-001:$49.99:r4.8:Engineering
+sort=price-desc
+  GET /personas?sort=price-desc
+  -> 200 [15 personas] p-011:$99.99:r4.7:Security, p-002:$89.99:r4.9:Security, p-008:$79.99:r4.4:DevOps, p-014:$74.99:r4.3:Engineering, p-005:$69.99:r4.5:Data, p-010:$64.99:r4.2:Data, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product
+sort=name-asc (names not shown; ids)
+  GET /personas?sort=name-asc
+  -> 200 [15 personas] p-009:$39.99:r4.6:Design, p-011:$99.99:r4.7:Security, p-010:$64.99:r4.2:Data, p-007:$59.99:r4.9:Engineering, p-015:$49.99:r4.4:Product, p-014:$74.99:r4.3:Engineering, p-012:$34.99:r4.1:Product, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-008:$79.99:r4.4:DevOps, p-013:$54.99:r4.5:Engineering, p-002:$89.99:r4.9:Security
+minPrice=0
+  GET /personas?minPrice=0
+  -> 200 [15 personas] p-001:$49.99:r4.8:Engineering, p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-006:$44.99:r4.3:Product, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-009:$39.99:r4.6:Design, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-012:$34.99:r4.1:Product, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering, p-015:$49.99:r4.4:Product
+persona p-001
+  GET /personas/p-001
+  -> 200 {"id":"p-001","name":"Refactor Rex","tagline":"Your relentless code reviewer","description":"Refactor Rex dives deep into your codebase, identifying code smells, reducing complexity, and suggesting clean architectural patterns. Ideal for legacy codebases that need modernization.","avatarUrl":"https://api.dicebear.com/9.x/bottts/svg?seed=Rex","specialty":"Engineering","capabilities":["Code review","Complexity analysis","Design patterns","Technical debt reduction"],"price":49.99,"rating":4.8,"reviewCount":234,"tier":"Pro"}
+persona nope
+  GET /personas/nope
+  -> 404 {"error":"Persona not found"}
+
+--- Auth ---
+register alice
+  POST /auth/register body={"username":"alice","email":"alice@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-ebd729d9-1708-434b-9ab3-c11eea8e6c19","username":"alice","email":"alice@x.com"}}
+register alice again
+  POST /auth/register body={"username":"alice2","email":"alice@x.com","password":"secret123"}
+  -> 409 {"error":"Email already registered"}
+login alice
+  POST /auth/login body={"email":"alice@x.com","password":"secret123"}
+  -> 200 {"token":"<jwt>","user":{"id":"user-ebd729d9-1708-434b-9ab3-c11eea8e6c19","username":"alice","email":"alice@x.com"}}
+  AuthResponse check (login): user keys=["id","username","email"] hasUsername=true
+  AuthResponse check (register): user keys=["id","username","email"]
+me with token
+  GET /auth/me [token]
+  -> 200 {"id":"user-ebd729d9-1708-434b-9ab3-c11eea8e6c19","username":"alice","email":"alice@x.com"}
+me without token
+  GET /auth/me
+  -> 401 {"error":"Unauthorized"}
+me garbage token
+  GET /auth/me [token]
+  -> 401 {"error":"Unauthorized"}
+
+--- Cart/favorites as alice ---
+add p-001 x2
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 200 {items:[cart-1:p-001@49.99x2], total:99.98}
+add p-001 x2 again
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 200 {items:[cart-1:p-001@49.99x4], total:199.96}
+get cart
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x4], total:199.96}
+  (alice item id = cart-1)
+put qty 0
+  PUT /cart/cart-1 body={"quantity":0} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"quantity":["Number must be greater than or equal to 1"]}}}
+put qty 3
+  PUT /cart/cart-1 body={"quantity":3} [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+fav add p-002
+  POST /favorites body={"personaId":"p-002"} [token]
+  -> 200 {"success":true}
+fav list
+  GET /favorites [token]
+  -> 200 {favorites:[p-002]}
+fav delete p-002
+  DELETE /favorites/p-002 [token]
+  -> 200 {"success":true}
+fav list after delete
+  GET /favorites [token]
+  -> 200 {favorites:[]}
+fav add {}
+  POST /favorites body={} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"personaId":["Required"]}}}
+fav add personaId:123
+  POST /favorites body={"personaId":123} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"personaId":["Expected string, received number"]}}}
+
+--- Cross-user (bob) ---
+register bob
+  POST /auth/register body={"username":"bobby","email":"bob@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-5e1b852a-dc95-4f17-86c1-34acbe7767c1","username":"bobby","email":"bob@x.com"}}
+bob PUT alice item
+  PUT /cart/cart-1 body={"quantity":9} [token]
+  -> 404 {"error":"Cart item not found"}
+bob GET cart
+  GET /cart [token]
+  -> 200 {items:[], total:0}
+alice GET cart (after bob PUT)
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+bob DELETE alice item
+  DELETE /cart/cart-1 [token]
+  -> 404 {"error":"Cart item not found"}
+alice GET cart (after bob DELETE)
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+
+--- Checkout as alice ---
+alice re-add p-003 x1
+  POST /cart body={"personaId":"p-003","quantity":1} [token]
+  -> 200 {items:[cart-1:p-001@49.99x3, cart-2:p-003@59.99x1], total:209.96}
+checkout
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 201 {order order-1 user=user-ebd729d9-1708-434b-9ab3-c11eea8e6c19 items:[cart-1:p-001@49.99x3, cart-2:p-003@59.99x1], total:209.96}
+cart after checkout
+  GET /cart [token]
+  -> 200 {items:[], total:0}
+checkout again
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 400 {"error":"Cart is empty"}
+
+--- Protected routes, NO Authorization header ---
+noauth GET /cart
+  GET /cart
+  -> 401 {"error":"Unauthorized"}
+noauth POST /cart
+  POST /cart body={"personaId":"p-001","quantity":1}
+  -> 401 {"error":"Unauthorized"}
+noauth PUT /cart/cart-1
+  PUT /cart/cart-1 body={"quantity":1}
+  -> 401 {"error":"Unauthorized"}
+noauth DELETE /cart/cart-1
+  DELETE /cart/cart-1
+  -> 401 {"error":"Unauthorized"}
+noauth GET /favorites
+  GET /favorites
+  -> 401 {"error":"Unauthorized"}
+noauth POST /favorites
+  POST /favorites body={"personaId":"p-001"}
+  -> 401 {"error":"Unauthorized"}
+noauth DELETE /favorites/p-001
+  DELETE /favorites/p-001
+  -> 401 {"error":"Unauthorized"}
+noauth POST /checkout
+  POST /checkout body={"name":"A","email":"a@x.com"}
+  -> 401 {"error":"Unauthorized"}
+noauth GET /auth/me
+  GET /auth/me
+  -> 401 {"error":"Unauthorized"}
+health after all (server alive?)
+  GET /health
+  -> 200 {"status":"ok"}
+
+--- CORS preflight ---
+preflight DELETE
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Origin: http://localhost:5173
+preflight PUT
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+
+--- Server error/warn log lines (1) ---
+  [40] JWT_SECRET is not set; using a random per-boot secret. Tokens will not survive a restart.  
+
+==================== MODE: ENFORCE_AUTH=true ====================
+
+--- Public ---
+health
+  GET /health
+  -> 200 {"status":"ok"}
+all personas
+  GET /personas
+  -> 200 [15 personas] p-001:$49.99:r4.8:Engineering, p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-006:$44.99:r4.3:Product, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-009:$39.99:r4.6:Design, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-012:$34.99:r4.1:Product, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering, p-015:$49.99:r4.4:Product
+minPrice=50
+  GET /personas?minPrice=50
+  -> 200 [10 personas] p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering
+maxPrice=50
+  GET /personas?maxPrice=50
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+minPrice=50&maxPrice=60
+  GET /personas?minPrice=50&maxPrice=60
+  -> 200 [4 personas] p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-007:$59.99:r4.9:Engineering, p-013:$54.99:r4.5:Engineering
+sort=price-asc
+  GET /personas?sort=price-asc
+  -> 200 [15 personas] p-012:$34.99:r4.1:Product, p-009:$39.99:r4.6:Design, p-006:$44.99:r4.3:Product, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-010:$64.99:r4.2:Data, p-005:$69.99:r4.5:Data, p-014:$74.99:r4.3:Engineering, p-008:$79.99:r4.4:DevOps, p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+sort=rating-desc
+  GET /personas?sort=rating-desc
+  -> 200 [15 personas] p-002:$89.99:r4.9:Security, p-007:$59.99:r4.9:Engineering, p-001:$49.99:r4.8:Engineering, p-004:$54.99:r4.7:Design, p-011:$99.99:r4.7:Security, p-003:$59.99:r4.6:DevOps, p-009:$39.99:r4.6:Design, p-005:$69.99:r4.5:Data, p-013:$54.99:r4.5:Engineering, p-008:$79.99:r4.4:DevOps, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-014:$74.99:r4.3:Engineering, p-010:$64.99:r4.2:Data, p-012:$34.99:r4.1:Product
+specialty=Security
+  GET /personas?specialty=Security
+  -> 200 [2 personas] p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+q=rex
+  GET /personas?q=rex
+  -> 200 [1 personas] p-001:$49.99:r4.8:Engineering
+sort=price-desc
+  GET /personas?sort=price-desc
+  -> 200 [15 personas] p-011:$99.99:r4.7:Security, p-002:$89.99:r4.9:Security, p-008:$79.99:r4.4:DevOps, p-014:$74.99:r4.3:Engineering, p-005:$69.99:r4.5:Data, p-010:$64.99:r4.2:Data, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product
+sort=name-asc (names not shown; ids)
+  GET /personas?sort=name-asc
+  -> 200 [15 personas] p-009:$39.99:r4.6:Design, p-011:$99.99:r4.7:Security, p-010:$64.99:r4.2:Data, p-007:$59.99:r4.9:Engineering, p-015:$49.99:r4.4:Product, p-014:$74.99:r4.3:Engineering, p-012:$34.99:r4.1:Product, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-008:$79.99:r4.4:DevOps, p-013:$54.99:r4.5:Engineering, p-002:$89.99:r4.9:Security
+minPrice=0
+  GET /personas?minPrice=0
+  -> 200 [15 personas] p-001:$49.99:r4.8:Engineering, p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-006:$44.99:r4.3:Product, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-009:$39.99:r4.6:Design, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-012:$34.99:r4.1:Product, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering, p-015:$49.99:r4.4:Product
+persona p-001
+  GET /personas/p-001
+  -> 200 {"id":"p-001","name":"Refactor Rex","tagline":"Your relentless code reviewer","description":"Refactor Rex dives deep into your codebase, identifying code smells, reducing complexity, and suggesting clean architectural patterns. Ideal for legacy codebases that need modernization.","avatarUrl":"https://api.dicebear.com/9.x/bottts/svg?seed=Rex","specialty":"Engineering","capabilities":["Code review","Complexity analysis","Design patterns","Technical debt reduction"],"price":49.99,"rating":4.8,"reviewCount":234,"tier":"Pro"}
+persona nope
+  GET /personas/nope
+  -> 404 {"error":"Persona not found"}
+
+--- Auth ---
+register alice
+  POST /auth/register body={"username":"alice","email":"alice@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-d9bd982e-e416-4604-a058-133e9d832e62","username":"alice","email":"alice@x.com"}}
+register alice again
+  POST /auth/register body={"username":"alice2","email":"alice@x.com","password":"secret123"}
+  -> 409 {"error":"Email already registered"}
+login alice
+  POST /auth/login body={"email":"alice@x.com","password":"secret123"}
+  -> 200 {"token":"<jwt>","user":{"id":"user-d9bd982e-e416-4604-a058-133e9d832e62","username":"alice","email":"alice@x.com"}}
+  AuthResponse check (login): user keys=["id","username","email"] hasUsername=true
+  AuthResponse check (register): user keys=["id","username","email"]
+me with token
+  GET /auth/me [token]
+  -> 200 {"id":"user-d9bd982e-e416-4604-a058-133e9d832e62","username":"alice","email":"alice@x.com"}
+me without token
+  GET /auth/me
+  -> 401 {"error":"Unauthorized"}
+me garbage token
+  GET /auth/me [token]
+  -> 401 {"error":"Unauthorized"}
+
+--- Cart/favorites as alice ---
+add p-001 x2
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 200 {items:[cart-1:p-001@49.99x2], total:99.98}
+add p-001 x2 again
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 200 {items:[cart-1:p-001@49.99x4], total:199.96}
+get cart
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x4], total:199.96}
+  (alice item id = cart-1)
+put qty 0
+  PUT /cart/cart-1 body={"quantity":0} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"quantity":["Number must be greater than or equal to 1"]}}}
+put qty 3
+  PUT /cart/cart-1 body={"quantity":3} [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+fav add p-002
+  POST /favorites body={"personaId":"p-002"} [token]
+  -> 200 {"success":true}
+fav list
+  GET /favorites [token]
+  -> 200 {favorites:[p-002]}
+fav delete p-002
+  DELETE /favorites/p-002 [token]
+  -> 200 {"success":true}
+fav list after delete
+  GET /favorites [token]
+  -> 200 {favorites:[]}
+fav add {}
+  POST /favorites body={} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"personaId":["Required"]}}}
+fav add personaId:123
+  POST /favorites body={"personaId":123} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"personaId":["Expected string, received number"]}}}
+
+--- Cross-user (bob) ---
+register bob
+  POST /auth/register body={"username":"bobby","email":"bob@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-a9860f5f-7d8e-41b3-b9e5-4aee091683c6","username":"bobby","email":"bob@x.com"}}
+bob PUT alice item
+  PUT /cart/cart-1 body={"quantity":9} [token]
+  -> 404 {"error":"Cart item not found"}
+bob GET cart
+  GET /cart [token]
+  -> 200 {items:[], total:0}
+alice GET cart (after bob PUT)
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+bob DELETE alice item
+  DELETE /cart/cart-1 [token]
+  -> 404 {"error":"Cart item not found"}
+alice GET cart (after bob DELETE)
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+
+--- Checkout as alice ---
+alice re-add p-003 x1
+  POST /cart body={"personaId":"p-003","quantity":1} [token]
+  -> 200 {items:[cart-1:p-001@49.99x3, cart-2:p-003@59.99x1], total:209.96}
+checkout
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 201 {order order-1 user=user-d9bd982e-e416-4604-a058-133e9d832e62 items:[cart-1:p-001@49.99x3, cart-2:p-003@59.99x1], total:209.96}
+cart after checkout
+  GET /cart [token]
+  -> 200 {items:[], total:0}
+checkout again
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 400 {"error":"Cart is empty"}
+
+--- Protected routes, NO Authorization header ---
+noauth GET /cart
+  GET /cart
+  -> 401 {"error":"Unauthorized"}
+noauth POST /cart
+  POST /cart body={"personaId":"p-001","quantity":1}
+  -> 401 {"error":"Unauthorized"}
+noauth PUT /cart/cart-1
+  PUT /cart/cart-1 body={"quantity":1}
+  -> 401 {"error":"Unauthorized"}
+noauth DELETE /cart/cart-1
+  DELETE /cart/cart-1
+  -> 401 {"error":"Unauthorized"}
+noauth GET /favorites
+  GET /favorites
+  -> 401 {"error":"Unauthorized"}
+noauth POST /favorites
+  POST /favorites body={"personaId":"p-001"}
+  -> 401 {"error":"Unauthorized"}
+noauth DELETE /favorites/p-001
+  DELETE /favorites/p-001
+  -> 401 {"error":"Unauthorized"}
+noauth POST /checkout
+  POST /checkout body={"name":"A","email":"a@x.com"}
+  -> 401 {"error":"Unauthorized"}
+noauth GET /auth/me
+  GET /auth/me
+  -> 401 {"error":"Unauthorized"}
+health after all (server alive?)
+  GET /health
+  -> 200 {"status":"ok"}
+
+--- CORS preflight ---
+preflight DELETE
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Origin: http://localhost:5173
+preflight PUT
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+
+--- Server error/warn log lines (1) ---
+  [40] JWT_SECRET is not set; using a random per-boot secret. Tokens will not survive a restart.  
+
+DONE
+
+==================== EXTRAS (r2) 2026-09-23T17:51:14.960Z ====================
+minPrice= (empty)
+  GET /personas?minPrice=
+  -> 200 [15 personas] p-001:$49.99,p-002:$89.99,p-003:$59.99,p-004:$54.99,p-005:$69.99,p-006:$44.99,p-007:$59.99,p-008:$79.99,p-009:$39.99,p-010:$64.99,p-011:$99.99,p-012:$34.99,p-013:$54.99,p-014:$74.99,p-015:$49.99
+maxPrice= (empty)
+  GET /personas?maxPrice=
+  -> 200 [0 personas] 
+maxPrice=%20 (space)
+  GET /personas?maxPrice=%20
+  -> 200 [0 personas] 
+maxPrice=Infinity
+  GET /personas?maxPrice=Infinity
+  -> 200 [15 personas] p-001:$49.99,p-002:$89.99,p-003:$59.99,p-004:$54.99,p-005:$69.99,p-006:$44.99,p-007:$59.99,p-008:$79.99,p-009:$39.99,p-010:$64.99,p-011:$99.99,p-012:$34.99,p-013:$54.99,p-014:$74.99,p-015:$49.99
+minPrice=-5
+  GET /personas?minPrice=-5
+  -> 200 [15 personas] p-001:$49.99,p-002:$89.99,p-003:$59.99,p-004:$54.99,p-005:$69.99,p-006:$44.99,p-007:$59.99,p-008:$79.99,p-009:$39.99,p-010:$64.99,p-011:$99.99,p-012:$34.99,p-013:$54.99,p-014:$74.99,p-015:$49.99
+minPrice=0x32 (hex)
+  GET /personas?minPrice=0x32
+  -> 200 [10 personas] p-002:$89.99,p-003:$59.99,p-004:$54.99,p-005:$69.99,p-007:$59.99,p-008:$79.99,p-010:$64.99,p-011:$99.99,p-013:$54.99,p-014:$74.99
+q= (empty)
+  GET /personas?q=
+  -> 200 [15 personas] p-001:$49.99,p-002:$89.99,p-003:$59.99,p-004:$54.99,p-005:$69.99,p-006:$44.99,p-007:$59.99,p-008:$79.99,p-009:$39.99,p-010:$64.99,p-011:$99.99,p-012:$34.99,p-013:$54.99,p-014:$74.99,p-015:$49.99
+tier= (empty)
+  GET /personas?tier=
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"tier":["Invalid enum value. Expected 'Starter' | 'Pro' | 'Enterprise', received ''"]}}}
+sort= (empty)
+  GET /personas?sort=
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"sort":["Invalid enum value. Expected 'price-asc' | 'price-desc' | 'rating-desc' | 'name-asc', received ''"]}}}
+specialty= (empty)
+  GET /personas?specialty=
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"specialty":["Invalid enum value. Expected 'Engineering' | 'Design' | 'Data' | 'Security' | 'DevOps' | 'Product', received ''"]}}}
+register carol
+  POST /auth/register body={"username":"carol","email":"Carol@X.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-61e18c13-0b98-42ee-9238-ea39591048a7","username":"carol","email":"Carol@X.com"}}
+login carol@x.com (lowercase)
+  POST /auth/login body={"email":"carol@x.com","password":"secret123"}
+  -> 401 {"error":"Invalid email or password"}
+register carol@x.com (dup differing case)
+  POST /auth/register body={"username":"carol2","email":"carol@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-e942b5d0-c692-4d5a-a2aa-d690ea45a019","username":"carol2","email":"carol@x.com"}}
+add qty 99 p-005
+  POST /cart body={"personaId":"p-005","quantity":99}
+  -> 200 {items:[cart-1:p-005x99], total:6929.01}
+add qty 1 p-005 (merge->100)
+  POST /cart body={"personaId":"p-005","quantity":1}
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"quantity":["Number must be less than or equal to 99"]}}}
+add qty 1.5 p-006
+  POST /cart body={"personaId":"p-006","quantity":1.5}
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"quantity":["Expected integer, received float"]}}}
+add unknown persona p-999
+  POST /cart body={"personaId":"p-999","quantity":1}
+  -> 404 {"error":"Persona not found"}
+add no quantity (default 1) p-006
+  POST /cart body={"personaId":"p-006"}
+  -> 200 {items:[cart-1:p-005x99,cart-2:p-006x1], total:6974}
+checkout bad body {}
+  POST /checkout body={}
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"name":["Required"],"email":["Required"]}}}
+cart after bad checkout (should be unchanged)
+  GET /cart
+  -> 200 {items:[cart-1:p-005x99,cart-2:p-006x1], total:6974}
+checkout no body
+  POST /checkout
+  -> 400 {"error":{"formErrors":["Required"],"fieldErrors":{}}}
+fav add personaId empty string
+  POST /favorites body={"personaId":""}
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"personaId":["String must contain at least 1 character(s)"]}}}
+health
+  GET /health
+  -> 200 {"status":"ok"}
+DONE EXTRAS

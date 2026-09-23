@@ -31,7 +31,7 @@ references are at `c2f0c62`.
   It ran under vitest + jsdom using the repo's own `renderApp` harness (from `a25326a`). `fetch` was bridged
   into the real API through `app.inject`, so each run exercised real routes, the real AuthProvider, the real
   queryClient and the real API.
-- **Scripts:** all under `scratchpad/errmd/`. That is `e1.mjs`–`e17b.mjs`, `e18boot.mjs` + `stale-hooks.mjs`,
+- **Scripts:** the API probes are kept at `docs/evidence/probes/` (run from the repo root after `pnpm build`, e.g. `node docs/evidence/probes/e5.mjs`). The UI replicas (`web-*`), the turbo replica (`turbo-env/`) and the stale-dist build (`stale/`) were throwaway and are not kept; they are referenced below as `errmd/...` for the record. Originally all under `errmd/`. That is `e1.mjs`–`e17b.mjs`, `e18boot.mjs` + `stale-hooks.mjs`,
   `turbo-env/`, and `web-c2f/ui.test.tsx` / `web-w2/ui.test.tsx`.
 - **E2 still reproduces against dist on purpose.** dist was built at c2f0c62, before `8f2728e`. That is not a
   contradiction: the fix is verified separately against current source.
@@ -84,7 +84,7 @@ references are at `c2f0c62`.
   - `cart.test.ts` injects DELETE *without* a content-type, which is not how the web client sends it.
   - The fix was verified at the layer where the symptom was reported (CORS), not end to end from the real client.
 - **Verified:**
-  - `node errmd/e1.mjs` (c2f0c62 dist):
+  - `node docs/evidence/probes/e1.mjs` (c2f0c62 dist):
     - `preflight 204 allow-methods: GET, POST, PUT, DELETE, OPTIONS`
     - `DELETE /cart/:id web-client headers -> 400 {...,"code":"FST_ERR_CTP_EMPTY_JSON_BODY","error":"Bad Request",...}`
     - `DELETE /favorites/:id web-client headers -> 400 ...`
@@ -111,7 +111,7 @@ references are at `c2f0c62`.
   With the old synchronous hash, check-then-insert ran without yielding, so it was effectively atomic.
 - **Why tests missed it:** H4 tests asserted hash correctness (collision rejected, per-user salt) and
   never sent concurrent registrations. The race only exists in the gap between two awaits.
-- **Verified:** `node errmd/e2.mjs`, 3 runs against c2f0c62 dist. Every run showed
+- **Verified:** `node docs/evidence/probes/e2.mjs`, 3 runs against c2f0c62 dist. Every run showed
   `parallel register -> 201 201` (two different `user-<uuid>` ids), one password → 401 and the other → 200,
   and then `sequential 3rd register -> 409`.
 - **Run log:** 2026-09-23 13:00 — `node e2.mjs` ×3 (c2f0c62 dist) → reproduced 3/3.
@@ -140,7 +140,7 @@ references are at `c2f0c62`.
 - **Why tests missed it:** C3 tests are API-only (forged token → 401, `exp` claim present).
   There were no web tests for session lifecycle.
 - **Verified:**
-  - API, `node errmd/e3.mjs`: `same boot GET /cart -> 200`. After a rebuild with a new per-boot secret,
+  - API, `node docs/evidence/probes/e3.mjs`: `same boot GET /cart -> 200`. After a rebuild with a new per-boot secret,
     `/auth/me`, `/cart` and `/favorites` all return `401 {"error":"Unauthorized"}`. Token claims are `id,email,iat,exp`, `exp-iat = 3600 s`.
   - UI, `web-c2f/ui.test.tsx` "E3": the server clock is advanced 3601 s after sign-in.
     - `/cart header user shown: true | page: 'Your cart is empty' | calls: GET /cart -> 200, GET /cart -> 401, GET /cart -> 401`
@@ -195,7 +195,7 @@ references are at `c2f0c62`.
   empty as "absent". Adopting the dormant schema changed that contract.
 - **Why tests missed it:** M3 tests covered the failure inputs we had evidence for (repeated `q`,
   `abc`, unknown enum, min>max). None covered empty values, which were fine before.
-- **Verified:** `node errmd/e5.mjs` → `"?maxPrice=" -> 200 0 personas`, `"?maxPrice=%20" -> 200 0 personas`, `"(none)" -> 200 15 personas`.
+- **Verified:** `node docs/evidence/probes/e5.mjs` → `"?maxPrice=" -> 200 0 personas`, `"?maxPrice=%20" -> 200 0 personas`, `"(none)" -> 200 15 personas`.
 - **Run log:** 2026-09-23 13:01 — `node e5.mjs` → reproduced. Table corrected: `?minPrice=` is harmless, and `?minPrice=Infinity` returns 0.
 - **Lesson:** wiring up an unused validator changes behavior for inputs that previously worked.
   Diff the old and new behavior over empty, whitespace and boundary inputs, not just the bad ones.
@@ -206,7 +206,7 @@ references are at `c2f0c62`.
 - **Mechanism:** `if (!user || !(await verifyPassword(...)))` (`auth.ts:72`) short-circuits, so scrypt runs only when
   the email exists. The old hash cost microseconds, so both paths took about the same time and there was no signal.
 - **Why tests missed it:** functional tests don't measure timing.
-- **Verified:** `node errmd/e6.mjs` (median of 20) → `registered email + wrong pw: 69.35` ms vs `unknown email: 0.24` ms.
+- **Verified:** `node docs/evidence/probes/e6.mjs` (median of 20) → `registered email + wrong pw: 69.35` ms vs `unknown email: 0.24` ms.
 - **Run log:** 2026-09-23 13:01 — `node e6.mjs` → reproduced (about 290× difference).
 - **Lesson:** making one branch deliberately expensive creates a timing side channel unless every
   branch pays the same cost (run a dummy hash for unknown users).
@@ -217,7 +217,7 @@ references are at `c2f0c62`.
 - **Mechanism:** login and register are unauthenticated and have no rate limit. Each call occupies one
   of libuv's 4 worker threads for about 68 ms, so a flood queues every real user's login behind it.
   The missing rate limit already existed but didn't matter until each call became expensive.
-- **Verified:** `node errmd/e7.mjs`:
+- **Verified:** `node docs/evidence/probes/e7.mjs`:
   - `victim login alone [status, ms]: [ 200, 69 ]`
   - `64 concurrent bad logins took 1094 ms ... | victim login fired during flood [status, ms]: [ 200, 1124 ] | UV_THREADPOOL_SIZE = (default 4)`
   - The second run gave 1150 ms.
@@ -231,7 +231,7 @@ references are at `c2f0c62`.
 - **Mechanism:** for a stored value like `scrypt$zz$zz`, non-hex decodes to a 0-byte key. scrypt runs
   with `keylen 0`, and `timingSafeEqual(<0 bytes>, <0 bytes>)` returns `true`. The key length is taken
   from the stored value, not from a constant.
-- **Verified:** `node errmd/e8.mjs` overwrites the stored hash through the real `db` module, then logs in with a wrong password:
+- **Verified:** `node docs/evidence/probes/e8.mjs` overwrites the stored hash through the real `db` module, then logs in with a wrong password:
   `stored="scrypt$zz$zz" -> 200`, `stored="scrypt$00$zz" -> 200`, `stored="scrypt$ab$0" -> 200`.
 - **Run log:** 2026-09-23 13:01 — `node e8.mjs` → reproduced for all 3 malformed values.
 - **Lesson:** the parser for a new storage format must validate lengths and fail closed.
@@ -244,7 +244,7 @@ references are at `c2f0c62`.
   `JWT_SECRET=a`, or the old public literal, is used without a warning.
 - **Mechanism:** `expiresIn` applies only at *sign* time. Verify options (`algorithms`, `requiredClaims`)
   were never set, and the secret has only a truthiness check (`app.ts:21`).
-- **Verified:** `node errmd/e9.mjs` (tokens hand-signed with fast-jwt 5.0.6 and the configured secret):
+- **Verified:** `node docs/evidence/probes/e9.mjs` (tokens hand-signed with fast-jwt 5.0.6 and the configured secret):
   - `no-exp HS256 alg: HS256 claims: id,email,iat -> /auth/me 200`
   - `no-exp HS512 alg: HS512 claims: id,email,iat -> /auth/me 200`
   - `JWT_SECRET="a" warn+ log lines: 0 []`
@@ -260,7 +260,7 @@ references are at `c2f0c62`.
 - **Mechanism:** handlers destructure `request.user`, which @fastify/jwt sets only inside `jwtVerify()`.
   The "off" setting skips that call, so `request.user` is null. It was never a working bypass;
   we preserved a mode that could only crash. It fails closed: only the exact string `"false"` disables auth.
-- **Verified:** `node errmd/e10.mjs <value>`, with a fresh process per value:
+- **Verified:** `node docs/evidence/probes/e10.mjs <value>`, with a fresh process per value:
   - `ENFORCE_AUTH="false"`: `GET /cart`, `GET /favorites` and `POST /checkout` return `500 "Cannot destructure property 'id' of 're...` with **and** without a valid token.
     `GET /auth/me` returns `500 "Cannot read properties of null (reading ...`.
   - `ENFORCE_AUTH="FALSE"`, `"0"` and `"true"`: no token → 401, valid token → 200 (fail closed confirmed).
@@ -276,7 +276,7 @@ references are at `c2f0c62`.
   - `cart.tsx` and `$personaId.tsx` never render mutation errors.
   The readable message from M7 is built but never displayed.
 - **Verified:**
-  - API, `node errmd/e11.mjs`: `plus at 99 (PUT quantity 100) -> 400 {"error":{..."quantity":["Number must be less than or equal to 99"]}}`.
+  - API, `node docs/evidence/probes/e11.mjs`: `plus at 99 (PUT quantity 100) -> 400 {"error":{..."quantity":["Number must be less than or equal to 99"]}}`.
     `Add to Cart on a 99 line (POST quantity 1) -> 400` (same body).
   - UI, `web-c2f/ui.test.tsx` "E11": `'+' disabled at 99: false`, `'+': PUT /cart/cart-1 -> 400 | error text shown: false`, `Add to Cart: POST /cart -> 400 | error text shown: false`.
 - **Run log:** 2026-09-23 13:01 — `node e11.mjs` → reproduced. 13:07 — vitest "E11" at c2f0c62 → reproduced. 13:14 — same test at 026f1c2 → identical output (still open).
@@ -289,7 +289,7 @@ references are at `c2f0c62`.
   (for example E1, or invalid JSON), `error` is the generic `"Bad Request"` and the detail is in `message`.
   M7 was modeled on the route-level zod 400 only. E1 is fixed, so the remaining trigger in practice is a malformed JSON body.
 - **Verified:**
-  - `node errmd/e12.mjs`: `Fastify-native bad JSON: 400 {"statusCode":400,"code":"FST_ERR_CTP_INVALID_JSON_BODY","error":"Bad Request","message":"Body is not valid JSON ..."}`.
+  - `node docs/evidence/probes/e12.mjs`: `Fastify-native bad JSON: 400 {"statusCode":400,"code":"FST_ERR_CTP_INVALID_JSON_BODY","error":"Bad Request","message":"Body is not valid JSON ..."}`.
     Compare `route-level zod 400: {"error":{"formErrors":[],"fieldErrors":{...}}}`.
   - Real `api.post` in vitest "E1/E12": `Fastify-native 400 surfaces as error.message: "Bad Request"`, at both c2f0c62 and 026f1c2.
 - **Run log:** 2026-09-23 13:01 — `node e12.mjs`. 13:14 — vitest "E1/E12" on both trees → reproduced.
@@ -364,11 +364,11 @@ references are at `c2f0c62`.
   - `vitest.config.ts:15` forces `ENFORCE_AUTH=true` for every suite. Its comment on `:14`, "Pre-fix, auth is opt-in", is stale and still present at 026f1c2.
   - `cart.test.ts` and `checkout.test.ts` never call `app.close()` (`grep close` → no matches in either file).
 - **Correction, NOT REPRODUCED:** the earlier claim that the forced config "hides the production default" no longer holds.
-  After C1, unset and `"true"` behave the same: `node errmd/e17b.mjs` → `ENFORCE_AUTH unset (production default) GET /cart no token -> 401`.
+  After C1, unset and `"true"` behave the same: `node docs/evidence/probes/e17b.mjs` → `ENFORCE_AUTH unset (production default) GET /cart no token -> 401`.
   The forced value is now redundant, not masking. Only the comment is wrong.
 - **Mechanism:** the harness was designed around the *buggy* behavior (sequential ids, auth off),
   to keep the other suites from being blocked by C1.
-- **Verified:** the old assertion's premise was run as two fresh processes against c2f0c62 dist (`node errmd/e17.mjs` ×2), registering the same email in each:
+- **Verified:** the old assertion's premise was run as two fresh processes against c2f0c62 dist (`node docs/evidence/probes/e17.mjs` ×2), registering the same email in each:
   `first=user-25f069d7-... second=user-bdfe7b8d-... equal=false`. The original harness assertion would fail on the fixed code.
 - **Run log:** 2026-09-23 13:05 — `git show 5bcddb1:apps/api/test/harness.test.ts`, `node e17.mjs` ×2, `node e17b.mjs`, grep → reproduced, except the "hides default" sub-claim.
 - **Lesson:** test scaffolding written before a fix tends to encode the bug. Review harness assertions

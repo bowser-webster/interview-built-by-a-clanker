@@ -1,0 +1,13 @@
+import { fresh, register, auth } from "./common.mjs";
+const app = await fresh();
+const { body } = await register(app);
+const h = auth(body.token);
+const pid = (await app.inject({ method: "GET", url: "/personas" })).json()[0].id;
+const a = await app.inject({ method: "POST", url: "/cart", headers: h, payload: { personaId: pid, quantity: 99 } });
+const item = a.json().items[0];
+console.log("add 99 ->", a.statusCode, "qty", item.quantity);
+const plus = await app.inject({ method: "PUT", url: `/cart/${item.id}`, headers: h, payload: { quantity: 100 } });
+console.log("plus at 99 (PUT quantity 100) ->", plus.statusCode, plus.body);
+const add1 = await app.inject({ method: "POST", url: "/cart", headers: h, payload: { personaId: pid, quantity: 1 } });
+console.log("Add to Cart on a 99 line (POST quantity 1) ->", add1.statusCode, add1.body);
+await app.close();

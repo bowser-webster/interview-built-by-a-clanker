@@ -1,0 +1,401 @@
+Smoke run 2026-09-23T17:20:27.792Z
+
+==================== MODE: ENFORCE_AUTH=(unset) ====================
+
+--- Public ---
+health
+  GET /health
+  -> 200 {"status":"ok"}
+all personas
+  GET /personas
+  -> 200 [15 personas] p-001:$49.99:r4.8:Engineering, p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-006:$44.99:r4.3:Product, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-009:$39.99:r4.6:Design, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-012:$34.99:r4.1:Product, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering, p-015:$49.99:r4.4:Product
+minPrice=50
+  GET /personas?minPrice=50
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+maxPrice=50
+  GET /personas?maxPrice=50
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+minPrice=50&maxPrice=60
+  GET /personas?minPrice=50&maxPrice=60
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+sort=price-asc
+  GET /personas?sort=price-asc
+  -> 200 [15 personas] p-012:$34.99:r4.1:Product, p-009:$39.99:r4.6:Design, p-006:$44.99:r4.3:Product, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-010:$64.99:r4.2:Data, p-005:$69.99:r4.5:Data, p-014:$74.99:r4.3:Engineering, p-008:$79.99:r4.4:DevOps, p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+sort=rating-desc
+  GET /personas?sort=rating-desc
+  -> 200 [15 personas] p-002:$89.99:r4.9:Security, p-007:$59.99:r4.9:Engineering, p-001:$49.99:r4.8:Engineering, p-004:$54.99:r4.7:Design, p-011:$99.99:r4.7:Security, p-003:$59.99:r4.6:DevOps, p-009:$39.99:r4.6:Design, p-005:$69.99:r4.5:Data, p-013:$54.99:r4.5:Engineering, p-008:$79.99:r4.4:DevOps, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-014:$74.99:r4.3:Engineering, p-010:$64.99:r4.2:Data, p-012:$34.99:r4.1:Product
+specialty=Security
+  GET /personas?specialty=Security
+  -> 200 [2 personas] p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+q=rex
+  GET /personas?q=rex
+  -> 200 [1 personas] p-001:$49.99:r4.8:Engineering
+sort=price-desc
+  GET /personas?sort=price-desc
+  -> 200 [15 personas] p-011:$99.99:r4.7:Security, p-002:$89.99:r4.9:Security, p-008:$79.99:r4.4:DevOps, p-014:$74.99:r4.3:Engineering, p-005:$69.99:r4.5:Data, p-010:$64.99:r4.2:Data, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product
+sort=name-asc (names not shown; ids)
+  GET /personas?sort=name-asc
+  -> 200 [15 personas] p-009:$39.99:r4.6:Design, p-011:$99.99:r4.7:Security, p-010:$64.99:r4.2:Data, p-007:$59.99:r4.9:Engineering, p-015:$49.99:r4.4:Product, p-014:$74.99:r4.3:Engineering, p-012:$34.99:r4.1:Product, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-008:$79.99:r4.4:DevOps, p-013:$54.99:r4.5:Engineering, p-002:$89.99:r4.9:Security
+minPrice=0
+  GET /personas?minPrice=0
+  -> 200 []
+persona p-001
+  GET /personas/p-001
+  -> 200 {"id":"p-001","name":"Refactor Rex","tagline":"Your relentless code reviewer","description":"Refactor Rex dives deep into your codebase, identifying code smells, reducing complexity, and suggesting clean architectural patterns. Ideal for legacy codebases that need modernization.","avatarUrl":"https://api.dicebear.com/9.x/bottts/svg?seed=Rex","specialty":"Engineering","capabilities":["Code review","Complexity analysis","Design patterns","Technical debt reduction"],"price":49.99,"rating":4.8,"reviewCount":234,"tier":"Pro"}
+persona nope
+  GET /personas/nope
+  -> 404 {"error":"Persona not found"}
+
+--- Auth ---
+register alice
+  POST /auth/register body={"username":"alice","email":"alice@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-1","username":"alice","email":"alice@x.com"}}
+register alice again
+  POST /auth/register body={"username":"alice2","email":"alice@x.com","password":"secret123"}
+  -> 409 {"error":"Email already registered"}
+login alice
+  POST /auth/login body={"email":"alice@x.com","password":"secret123"}
+  -> 200 {"token":"<jwt>","user":{"id":"user-1","email":"alice@x.com"}}
+  AuthResponse check (login): user keys=["id","email"] hasUsername=false
+  AuthResponse check (register): user keys=["id","username","email"]
+me with token
+  GET /auth/me [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot read properties of null (reading 'id')"}
+me without token
+  GET /auth/me
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot read properties of null (reading 'id')"}
+me garbage token
+  GET /auth/me [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot read properties of null (reading 'id')"}
+
+--- Cart/favorites as alice ---
+add p-001 x2
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+add p-001 x2 again
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+get cart
+  GET /cart [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+  (alice item id = cart-1)
+put qty 0
+  PUT /cart/cart-1 body={"quantity":0} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+put qty 3
+  PUT /cart/cart-1 body={"quantity":3} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+fav add p-002
+  POST /favorites body={"personaId":"p-002"} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+fav list
+  GET /favorites [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+fav delete p-002
+  DELETE /favorites/p-002 [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+fav list after delete
+  GET /favorites [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+fav add {}
+  POST /favorites body={} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+fav add personaId:123
+  POST /favorites body={"personaId":123} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+
+--- Cross-user (bob) ---
+register bob
+  POST /auth/register body={"username":"bobby","email":"bob@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-2","username":"bobby","email":"bob@x.com"}}
+bob PUT alice item
+  PUT /cart/cart-1 body={"quantity":9} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+bob GET cart
+  GET /cart [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+alice GET cart (after bob PUT)
+  GET /cart [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+bob DELETE alice item
+  DELETE /cart/cart-1 [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+alice GET cart (after bob DELETE)
+  GET /cart [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+
+--- Checkout as alice ---
+alice re-add p-003 x1
+  POST /cart body={"personaId":"p-003","quantity":1} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+checkout
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+cart after checkout
+  GET /cart [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+checkout again
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+
+--- Protected routes, NO Authorization header ---
+noauth GET /cart
+  GET /cart
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth POST /cart
+  POST /cart body={"personaId":"p-001","quantity":1}
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth PUT /cart/cart-1
+  PUT /cart/cart-1 body={"quantity":1}
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth DELETE /cart/cart-1
+  DELETE /cart/cart-1
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth GET /favorites
+  GET /favorites
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth POST /favorites
+  POST /favorites body={"personaId":"p-001"}
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth DELETE /favorites/p-001
+  DELETE /favorites/p-001
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth POST /checkout
+  POST /checkout body={"name":"A","email":"a@x.com"}
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot destructure property 'id' of 'request.user' as it is null."}
+noauth GET /auth/me
+  GET /auth/me
+  -> 500 {"statusCode":500,"error":"Internal Server Error","message":"Cannot read properties of null (reading 'id')"}
+health after all (server alive?)
+  GET /health
+  -> 200 {"status":"ok"}
+
+--- CORS preflight ---
+preflight DELETE
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS
+  Access-Control-Allow-Origin: http://localhost:5173
+preflight PUT
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS
+
+--- Server error/warn log lines (32) ---
+  [50] Cannot read properties of null (reading 'id') TypeError: Cannot read properties of null (reading 'id') /auth/me
+  [50] Cannot read properties of null (reading 'id') TypeError: Cannot read properties of null (reading 'id') /auth/me
+  [50] Cannot read properties of null (reading 'id') TypeError: Cannot read properties of null (reading 'id') /auth/me
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart/cart-1
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart/cart-1
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites/p-002
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart/cart-1
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart/cart-1
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /checkout
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /checkout
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart/cart-1
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /cart/cart-1
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /favorites/p-001
+  [50] Cannot destructure property 'id' of 'request.user' as it is null. TypeError: Cannot destructure property 'id' of 'request.user' as it is null. /checkout
+  [50] Cannot read properties of null (reading 'id') TypeError: Cannot read properties of null (reading 'id') /auth/me
+
+==================== MODE: ENFORCE_AUTH=true ====================
+
+--- Public ---
+health
+  GET /health
+  -> 200 {"status":"ok"}
+all personas
+  GET /personas
+  -> 200 [15 personas] p-001:$49.99:r4.8:Engineering, p-002:$89.99:r4.9:Security, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-006:$44.99:r4.3:Product, p-007:$59.99:r4.9:Engineering, p-008:$79.99:r4.4:DevOps, p-009:$39.99:r4.6:Design, p-010:$64.99:r4.2:Data, p-011:$99.99:r4.7:Security, p-012:$34.99:r4.1:Product, p-013:$54.99:r4.5:Engineering, p-014:$74.99:r4.3:Engineering, p-015:$49.99:r4.4:Product
+minPrice=50
+  GET /personas?minPrice=50
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+maxPrice=50
+  GET /personas?maxPrice=50
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+minPrice=50&maxPrice=60
+  GET /personas?minPrice=50&maxPrice=60
+  -> 200 [5 personas] p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product, p-015:$49.99:r4.4:Product
+sort=price-asc
+  GET /personas?sort=price-asc
+  -> 200 [15 personas] p-012:$34.99:r4.1:Product, p-009:$39.99:r4.6:Design, p-006:$44.99:r4.3:Product, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-010:$64.99:r4.2:Data, p-005:$69.99:r4.5:Data, p-014:$74.99:r4.3:Engineering, p-008:$79.99:r4.4:DevOps, p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+sort=rating-desc
+  GET /personas?sort=rating-desc
+  -> 200 [15 personas] p-002:$89.99:r4.9:Security, p-007:$59.99:r4.9:Engineering, p-001:$49.99:r4.8:Engineering, p-004:$54.99:r4.7:Design, p-011:$99.99:r4.7:Security, p-003:$59.99:r4.6:DevOps, p-009:$39.99:r4.6:Design, p-005:$69.99:r4.5:Data, p-013:$54.99:r4.5:Engineering, p-008:$79.99:r4.4:DevOps, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-014:$74.99:r4.3:Engineering, p-010:$64.99:r4.2:Data, p-012:$34.99:r4.1:Product
+specialty=Security
+  GET /personas?specialty=Security
+  -> 200 [2 personas] p-002:$89.99:r4.9:Security, p-011:$99.99:r4.7:Security
+q=rex
+  GET /personas?q=rex
+  -> 200 [1 personas] p-001:$49.99:r4.8:Engineering
+sort=price-desc
+  GET /personas?sort=price-desc
+  -> 200 [15 personas] p-011:$99.99:r4.7:Security, p-002:$89.99:r4.9:Security, p-008:$79.99:r4.4:DevOps, p-014:$74.99:r4.3:Engineering, p-005:$69.99:r4.5:Data, p-010:$64.99:r4.2:Data, p-003:$59.99:r4.6:DevOps, p-007:$59.99:r4.9:Engineering, p-004:$54.99:r4.7:Design, p-013:$54.99:r4.5:Engineering, p-001:$49.99:r4.8:Engineering, p-015:$49.99:r4.4:Product, p-006:$44.99:r4.3:Product, p-009:$39.99:r4.6:Design, p-012:$34.99:r4.1:Product
+sort=name-asc (names not shown; ids)
+  GET /personas?sort=name-asc
+  -> 200 [15 personas] p-009:$39.99:r4.6:Design, p-011:$99.99:r4.7:Security, p-010:$64.99:r4.2:Data, p-007:$59.99:r4.9:Engineering, p-015:$49.99:r4.4:Product, p-014:$74.99:r4.3:Engineering, p-012:$34.99:r4.1:Product, p-003:$59.99:r4.6:DevOps, p-004:$54.99:r4.7:Design, p-005:$69.99:r4.5:Data, p-001:$49.99:r4.8:Engineering, p-006:$44.99:r4.3:Product, p-008:$79.99:r4.4:DevOps, p-013:$54.99:r4.5:Engineering, p-002:$89.99:r4.9:Security
+minPrice=0
+  GET /personas?minPrice=0
+  -> 200 []
+persona p-001
+  GET /personas/p-001
+  -> 200 {"id":"p-001","name":"Refactor Rex","tagline":"Your relentless code reviewer","description":"Refactor Rex dives deep into your codebase, identifying code smells, reducing complexity, and suggesting clean architectural patterns. Ideal for legacy codebases that need modernization.","avatarUrl":"https://api.dicebear.com/9.x/bottts/svg?seed=Rex","specialty":"Engineering","capabilities":["Code review","Complexity analysis","Design patterns","Technical debt reduction"],"price":49.99,"rating":4.8,"reviewCount":234,"tier":"Pro"}
+persona nope
+  GET /personas/nope
+  -> 404 {"error":"Persona not found"}
+
+--- Auth ---
+register alice
+  POST /auth/register body={"username":"alice","email":"alice@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-1","username":"alice","email":"alice@x.com"}}
+register alice again
+  POST /auth/register body={"username":"alice2","email":"alice@x.com","password":"secret123"}
+  -> 409 {"error":"Email already registered"}
+login alice
+  POST /auth/login body={"email":"alice@x.com","password":"secret123"}
+  -> 200 {"token":"<jwt>","user":{"id":"user-1","email":"alice@x.com"}}
+  AuthResponse check (login): user keys=["id","email"] hasUsername=false
+  AuthResponse check (register): user keys=["id","username","email"]
+me with token
+  GET /auth/me [token]
+  -> 200 {"id":"user-1","username":"alice","email":"alice@x.com"}
+me without token
+  GET /auth/me
+  -> 401 {"error":"Unauthorized"}
+me garbage token
+  GET /auth/me [token]
+  -> 401 {"error":"Unauthorized"}
+
+--- Cart/favorites as alice ---
+add p-001 x2
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 200 {items:[cart-1:p-001@49.99x2], total:99.98}
+add p-001 x2 again
+  POST /cart body={"personaId":"p-001","quantity":2} [token]
+  -> 200 {items:[cart-1:p-001@49.99x4], total:199.96}
+get cart
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x4], total:199.96}
+  (alice item id = cart-1)
+put qty 0
+  PUT /cart/cart-1 body={"quantity":0} [token]
+  -> 400 {"error":{"formErrors":[],"fieldErrors":{"quantity":["Number must be greater than or equal to 1"]}}}
+put qty 3
+  PUT /cart/cart-1 body={"quantity":3} [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+fav add p-002
+  POST /favorites body={"personaId":"p-002"} [token]
+  -> 200 {"success":true}
+fav list
+  GET /favorites [token]
+  -> 200 {favorites:[p-002]}
+fav delete p-002
+  DELETE /favorites/p-002 [token]
+  -> 200 {"success":true}
+fav list after delete
+  GET /favorites [token]
+  -> 200 {favorites:[]}
+fav add {}
+  POST /favorites body={} [token]
+  -> 400 {"error":"personaId is required"}
+fav add personaId:123
+  POST /favorites body={"personaId":123} [token]
+  -> 404 {"error":"Persona not found"}
+
+--- Cross-user (bob) ---
+register bob
+  POST /auth/register body={"username":"bobby","email":"bob@x.com","password":"secret123"}
+  -> 201 {"token":"<jwt>","user":{"id":"user-2","username":"bobby","email":"bob@x.com"}}
+bob PUT alice item
+  PUT /cart/cart-1 body={"quantity":9} [token]
+  -> 404 {"error":"Cart item not found"}
+bob GET cart
+  GET /cart [token]
+  -> 200 {items:[], total:0}
+alice GET cart (after bob PUT)
+  GET /cart [token]
+  -> 200 {items:[cart-1:p-001@49.99x3], total:149.97}
+bob DELETE alice item
+  DELETE /cart/cart-1 [token]
+  -> 200 {items:[], total:0}
+alice GET cart (after bob DELETE)
+  GET /cart [token]
+  -> 200 {items:[], total:0}
+
+--- Checkout as alice ---
+alice re-add p-003 x1
+  POST /cart body={"personaId":"p-003","quantity":1} [token]
+  -> 200 {items:[cart-2:p-003@59.99x1], total:59.99}
+checkout
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 201 {order order-1 user=user-1 items:[cart-2:p-003@59.99x1], total:59.99}
+cart after checkout
+  GET /cart [token]
+  -> 200 {items:[cart-2:p-003@59.99x1], total:59.99}
+checkout again
+  POST /checkout body={"name":"A","email":"a@x.com"} [token]
+  -> 201 {order order-2 user=user-1 items:[cart-2:p-003@59.99x1], total:59.99}
+
+--- Protected routes, NO Authorization header ---
+noauth GET /cart
+  GET /cart
+  -> 401 {"error":"Unauthorized"}
+noauth POST /cart
+  POST /cart body={"personaId":"p-001","quantity":1}
+  -> 401 {"error":"Unauthorized"}
+noauth PUT /cart/cart-1
+  PUT /cart/cart-1 body={"quantity":1}
+  -> 401 {"error":"Unauthorized"}
+noauth DELETE /cart/cart-1
+  DELETE /cart/cart-1
+  -> 401 {"error":"Unauthorized"}
+noauth GET /favorites
+  GET /favorites
+  -> 401 {"error":"Unauthorized"}
+noauth POST /favorites
+  POST /favorites body={"personaId":"p-001"}
+  -> 401 {"error":"Unauthorized"}
+noauth DELETE /favorites/p-001
+  DELETE /favorites/p-001
+  -> 401 {"error":"Unauthorized"}
+noauth POST /checkout
+  POST /checkout body={"name":"A","email":"a@x.com"}
+  -> 401 {"error":"Unauthorized"}
+noauth GET /auth/me
+  GET /auth/me
+  -> 401 {"error":"Unauthorized"}
+health after all (server alive?)
+  GET /health
+  -> 200 {"status":"ok"}
+
+--- CORS preflight ---
+preflight DELETE
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS
+  Access-Control-Allow-Origin: http://localhost:5173
+preflight PUT
+  OPTIONS /cart/cart-1
+  -> 204 ""
+  Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS
+
+--- Server error/warn log lines (0) ---
+
+DONE

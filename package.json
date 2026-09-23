@@ -7,9 +7,13 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "clean": "turbo clean",
-    "test": "turbo test"
+    "test": "turbo test",
+    "smoke:api": "node scripts/api-smoke.mjs",
+    "smoke:e2e": "node scripts/e2e-smoke.cjs",
+    "smoke:explore": "node scripts/e2e-explore.cjs"
   },
   "devDependencies": {
+    "playwright": "^1.63.0",
     "turbo": "^2.4.0",
     "typescript": "^5.7.0"
   },

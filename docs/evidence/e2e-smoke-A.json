@@ -1,0 +1,144 @@
+{
+  "results": [
+    {
+      "id": "H7",
+      "step": "card shows $49.99/mo, not $4999.00",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "id": "H6",
+      "step": "Security filter refetches and shows only Security personas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "id": "H6",
+      "step": "sort price-asc puts cheapest (Onboard Olivia $34.99) first",
+      "ok": true,
+      "detail": "Onboard Olivia"
+    },
+    {
+      "id": "M1",
+      "step": "register signs in and nav shows username",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "id": "H5",
+      "step": "empty heart sends POST /favorites and fills",
+      "ok": true,
+      "detail": "POST 200, fill=currentColor"
+    },
+    {
+      "id": "H8",
+      "step": "favorites page lists the favorite after visiting detail",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "id": "H8",
+      "step": "detail page renders after /favorites (no includes() crash)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "id": "E1/H1",
+      "step": "browser DELETE /favorites/p-001 succeeds and list empties",
+      "ok": true,
+      "detail": "DELETE 200"
+    },
+    {
+      "id": "M6",
+      "step": "badge updates after each Add to Cart without reload",
+      "ok": true,
+      "detail": "badge 1 -> 2"
+    },
+    {
+      "id": "M9",
+      "step": "'-' at qty 1 is disabled",
+      "ok": true,
+      "detail": "badge now 1"
+    },
+    {
+      "id": "E1/H1",
+      "step": "browser DELETE /cart/:id succeeds, cart empties, badge gone",
+      "ok": true,
+      "detail": "DELETE 200"
+    },
+    {
+      "id": "H3/M6",
+      "step": "after checkout: badge gone and cart empty",
+      "ok": true,
+      "detail": "badge after order=null"
+    },
+    {
+      "id": "H9",
+      "step": "sign out + reload stays signed out, token removed",
+      "ok": true,
+      "detail": "token=null"
+    },
+    {
+      "id": "M1",
+      "step": "login shows username immediately (no reload)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "net": [
+    "GET /personas -> 200",
+    "GET /personas?specialty=Security -> 200",
+    "GET /personas?sort=price-asc -> 200",
+    "POST /auth/register -> 201",
+    "GET /cart -> 200",
+    "GET /auth/me -> 200",
+    "GET /personas -> 200",
+    "GET /auth/me -> 200",
+    "GET /auth/me -> 200",
+    "GET /personas/p-001 -> 200",
+    "GET /favorites -> 200",
+    "GET /cart -> 200",
+    "POST /favorites -> 200",
+    "GET /favorites -> 200",
+    "DELETE /favorites/p-001 -> 200",
+    "GET /favorites -> 200",
+    "GET /auth/me -> 200",
+    "GET /auth/me -> 200",
+    "GET /personas/p-001 -> 200",
+    "GET /favorites -> 200",
+    "GET /cart -> 200",
+    "POST /cart -> 200",
+    "GET /cart -> 200",
+    "POST /cart -> 200",
+    "GET /cart -> 200",
+    "GET /cart -> 200",
+    "PUT /cart/cart-1 -> 200",
+    "GET /cart -> 200",
+    "GET /cart -> 200",
+    "DELETE /cart/cart-1 -> 200",
+    "GET /cart -> 200",
+    "GET /cart -> 200",
+    "GET /auth/me -> 200",
+    "GET /auth/me -> 200",
+    "GET /favorites -> 200",
+    "GET /personas/p-003 -> 200",
+    "GET /cart -> 200",
+    "POST /cart -> 200",
+    "GET /cart -> 200",
+    "GET /cart -> 200",
+    "POST /checkout -> 201",
+    "GET /cart -> 200",
+    "GET /cart -> 200",
+    "GET /auth/me -> 200",
+    "GET /auth/me -> 200",
+    "GET /cart -> 200",
+    "GET /cart -> 200",
+    "GET /personas -> 200",
+    "GET /personas -> 200",
+    "POST /auth/login -> 200",
+    "GET /cart -> 200",
+    "GET /auth/me -> 200",
+    "GET /personas -> 200"
+  ],
+  "pageErrors": []
+}

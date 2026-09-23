@@ -1,6 +1,7 @@
 # NEXT-Steps.md: work we are knowingly skipping
 
-_Last validated: 2026-09-23T18:16:02Z against 026f1c2 — 43 open, 0 resolved, 5 added._
+_Last validated: 2026-09-23T18:16:02Z against 026f1c2 — 43 open, 0 resolved, 5 added._  
+_Updated 2026-09-23 wrap-up: NS-M1 resolved (d255752); evidence moved into `docs/evidence/`; smoke scripts made portable under `scripts/`._
 
 This file tracks everything we have found and **deliberately not fixed yet**, so nothing is lost when we stop.
 Companion files:
@@ -21,12 +22,12 @@ Next comes a Playwright smoke run of the app.
 - `OUT-OF-SCOPE`: noticed while fixing something else, and owned by a file the fixer didn't own.
 - `UNREACHABLE`: a real defect that no client can trigger today.
 
-**How the 2026-09-23 validation was done** (no ports bound; scripts are in `scratchpad/nextsteps/`):
+**How the 2026-09-23 validation was done** (no ports bound; the validation probes were throwaway and are not kept. Re-runnable equivalents: `docs/evidence/probes/*.mjs` and `scripts/`):
 - `api-checks.mjs`, `api-checks2.mjs` and `enforce-off.mjs` call `app.inject()` on `apps/api/dist/app.js`.
   `dist` is current: no API source changed after `8f2728e`, and `dist/routes/auth.js:31-32` already has the E2 hash-before-check order.
 - `web/ns.test.tsx` is a throwaway vitest file that uses the real route tree through `apps/web/src/test/renderApp.tsx`
   with a stubbed fetch. 16/16 pass: 15 assert that a defect is still there, and 1 re-checks the tier filter.
-- Exploratory Playwright run in real Chromium against 026f1c2: `scratchpad/pw-explore.json`, `scratchpad/ex-*.png`.
+- Exploratory Playwright run in real Chromium against 026f1c2: `docs/evidence/e2e-explore.json`, `docs/evidence/screenshots/ex-*.png` (re-run: `pnpm smoke:explore`).
 - The `turbo-*.json` files come from `turbo run dev|test|lint --dry=json` (turbo 2.8.20).
 - Name clash: **round-1 L5** (a stale `/auth/me` 401 deletes a fresh token, E15) is fixed in `ad27cf5`, and
   `apps/web/src/test/session.test.tsx:166` guards it. **NS-L5** below (N11, ghost-user tokens) is a different defect and is still open.
@@ -36,7 +37,7 @@ Next comes a Playwright smoke run of the app.
 ## Suggested order (next up)
 Ranked by value ÷ effort.
 
-1. **NS-M1**: one API test. It guards the sibling of the C2 Critical fix. If that fix regresses, Bob can change the quantity on Alice's cart line, and no test would notice.
+1. ~~**NS-M1**~~: DONE in `d255752` (PUT ownership test; killed mutation e).
 2. **NS-L23**: one `passThroughEnv` line in `turbo.json`. Since W2, every 401 ends the session, so under `pnpm dev` each API save now rotates the secret *and signs the developer out*. The Playwright smoke run will hit this too.
 3. **NS-L5**: one user lookup in `authenticate`. A token for a user who no longer exists can still write the cart and favorites and **place orders (201)**, verified. The same fix also closes the `/auth/me` 404 path in NS-L33.
 4. **NS-L4**: two verify options in `app.ts:27`. A token with no `exp` and an HS512 token are both accepted today (verified). This finishes the C3 hardening.
@@ -51,7 +52,7 @@ Ranked by value ÷ effort.
 Source: round-2 mutation run at `c2f0c62`, 34 mutations: **24 killed, 10 survived**. One survivor, `g1`
 (`clearForUser` moved to just before the items are built), is equivalent, because the entries are already snapshotted.
 That leaves **9 real gaps**: `e, u, v, w, z1, z2, z3, z5, z6`. All 9 appear below. `w+z1` share NS-M2 and `z5+z6` share NS-M7.
-Full log: `scratchpad/mutation-r2-results.txt` (`grep -c "=> KILLED"` → 24, `"=> SURVIVED"` → 10).
+Full log: `docs/evidence/mutation-round2.txt` (`grep -c "=> KILLED"` → 24, `"=> SURVIVED"` → 10).
 Each row is a production change that **every test still passes with**, which means no test protects that behavior.
 Re-validated at 026f1c2: none of the missing tests has been added. The only API test added since c2f0c62 is
 `register-race.test.ts`, and the web tests target W1–W4. The Evidence column shows what `dist` does today,
@@ -59,7 +60,7 @@ which is what the missing test would assert.
 
 | ID | Mutant(s) | Surviving mutation | Location | Missing test (suggested) | Sev | Evidence | Status |
 |---|---|---|---|---|---|---|---|
-| NS-M1 | `e` | Remove the PUT ownership check (the sibling of the C2 fix) | `apps/api/src/routes/cart.ts:77-80` (guard `item.userId !== userId` at `:78`). The only PUT test is the quantity-cap test at `apps/api/test/cart.test.ts:127` | Bob sends `PUT /cart/<alice item> {quantity:9}` → 404, and Alice's line is still `quantity:3` | **Medium** | ✅ current behavior: 404 `{"error":"Cart item not found"}`, Alice qty stays 3. No test asserts it | STILL OPEN |
+| NS-M1 | `e` | Remove the PUT ownership check (the sibling of the C2 fix) | `apps/api/src/routes/cart.ts:77-80` (guard `item.userId !== userId` at `:78`). The only PUT test is the quantity-cap test at `apps/api/test/cart.test.ts:127` | Bob sends `PUT /cart/<alice item> {quantity:9}` → 404, and Alice's line is still `quantity:3` | **Medium** | ✅ current behavior: 404 `{"error":"Cart item not found"}`, Alice qty stays 3. No test asserts it | **RESOLVED (by d255752)**: `cart.test.ts` "PUT /cart/:itemId ownership (NS-M1)"; RED with mutation e applied: `expected 200 to be 404` |
 | NS-M2 | `w`, `z1` | Cart merge `+=` → `=`, or reject every merge | `apps/api/src/db.ts:420-424` (`+=` at `:421`), `apps/api/src/routes/cart.ts:52-62`. The only merge test covers the rejection path (`cart.test.ts:114`) | Add p-001 ×2, then ×2 → one line with qty 4, total 199.96. Also merging to exactly 99 (60 + 39) → 200 | Low | ✅ 2+2 → 1 line, qty 4, total 199.96 | STILL OPEN |
 | NS-M3 | `u` | Drop cents rounding of the cart total | `apps/api/src/routes/cart.ts:25`. **Also** `apps/api/src/routes/checkout.ts:44`: the checkout test (`checkout.test.ts:75-89`) uses p-001×2 + p-002×3 = 369.95, which is exact in floating point, so dropping the rounding there survives too | **Corrected:** the old suggestion (3 × 49.99) would NOT kill this mutation, because `49.99*3 === 149.97` exactly in JS. Use **p-002 × 3** instead: raw `269.96999999999997`, expected `total === 269.97` (cart and checkout). Other failing-without-rounding inputs: p-001×5, p-001+p-005 | Low | ✅ `m3-find.mjs` and inject | STILL OPEN |
 | NS-M4 | `v` | Reverse the `rating-desc` comparator | `apps/api/src/db.ts:380-382` (comparator `:381`); price-desc `:378`, name-asc `:384`. Only price-asc is asserted (`personas.test.ts:91-99`) | Assert the order for rating-desc (`p-002,p-007` 4.9 first, then `p-001` 4.8), price-desc (`p-011` 99.99 first) and name-asc (`p-009` "A11y Alex" first) | Low | ✅ orders observed | STILL OPEN |
@@ -139,7 +140,7 @@ They are kept as regression guards. They are not evidence.
 | NS-L28 | The web `test` script uses `--passWithNoTests`, so deleting every test still passes | `apps/web/package.json:11` | ✅ was 📖 (dry run: `@acme/web#test` command is `vitest run --passWithNoTests`) | Remove the flag now that tests exist | STILL OPEN |
 | NS-L29 (L9) | `pnpm lint` does nothing (no lint script or config anywhere) | root `package.json:7`; `turbo.json:16-20` | ✅ re-run dry: every `#lint` task is `<NONEXISTENT>` (it still builds `shared` first) | Add ESLint, or drop the script | STILL OPEN |
 | NS-L30 (E18) | `pnpm dev` against a stale shared `dist` crashes the API at boot (`addFavoriteSchema` missing) | `turbo.json:12-15` (`dev` has no `dependsOn`) | ✅ pipeline gap (dry run: `@acme/api#dev` `dependencies: []`) / ❓ crash not reproduced | `dev.dependsOn: ["^build"]` | STILL OPEN |
-| NS-L31 | `pnpm` isn't installed globally on this machine. We use the corepack shim at `scratchpad/bin/pnpm.cmd` | environment | ✅ re-run: `where pnpm` → not found | Install pnpm 9.15 (`corepack enable` failed on a signing-key bug) | STILL OPEN |
+| NS-L31 | `pnpm` 9.15 must be on PATH (turbo needs the binary). On the original machine `corepack enable` failed with a corepack 0.29.3 signing-key error, so a local shim forwarding to `corepack pnpm@9.15.0` was used | environment | ✅ | Install with `npm i -g pnpm@9.15.0`, or upgrade corepack (`npm i -g corepack@latest`) then `corepack enable` | STILL OPEN (environment only; nothing in the repo depends on the shim) |
 
 ---
 
@@ -150,7 +151,7 @@ All re-checked at 026f1c2 and unchanged.
 - **Quantity cap = 99** (`packages/shared/src/schemas/cart.ts:14`). An arbitrary bound chosen in the M5 fix. The constant is private, because exporting it needed a file the fixer didn't own. NS-L13 ("disable '+' at 99") will need it exported or duplicated.
 
 ## 4. Verified working in the browser (exploratory, 026f1c2)
-Real Chromium run; evidence in `scratchpad/pw-explore.json` and `scratchpad/ex-01…09-*.png`. No need to re-test these:
+Real Chromium run; evidence in `docs/evidence/e2e-explore.json` and `docs/evidence/screenshots/ex-01…09-*.png`. No need to re-test these:
 - Signed out, `/cart`, `/favorites` and `/checkout` show sign-in prompts, and the persona detail page hides Add to Cart.
 - An unknown route shows "Not Found". An unknown persona shows "Persona not found" (slowly; see NS-L36).
 - Search (`zara` → 1 card), the no-results state with Clear filters (restores 15 cards and empties the box), and all 4 sorts work.
@@ -176,4 +177,4 @@ Real Chromium run; evidence in `scratchpad/pw-explore.json` and `scratchpad/ex-0
   E18→L24/L25/L30 · E19→L20 · E20→L34 (parts 1–2) and L35 (part 3).
   One sub-point has no item of its own: **E20 part 2, a 401 does not redirect to /login.** Each page renders its own
   sign-in prompt instead, and that was verified working in the browser (section 4). It is left as is. Open an item only if a redirect is wanted.
-- `apps/api/dist` was current at validation time. Rebuild before re-running `scratchpad/nextsteps/*.mjs` if API or shared source changes.
+- `apps/api/dist` was current at validation time. Rebuild (`pnpm build`) before re-running `docs/evidence/probes/*.mjs` if API or shared source changes.

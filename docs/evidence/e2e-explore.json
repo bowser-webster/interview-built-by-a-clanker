@@ -1,0 +1,194 @@
+{
+  "obs": [
+    {
+      "area": "signed-out",
+      "what": "/cart shows a sign-in prompt",
+      "ok": true,
+      "detail": "Sign in to view your cart"
+    },
+    {
+      "area": "signed-out",
+      "what": "/favorites shows a sign-in prompt",
+      "ok": true,
+      "detail": "Sign in to view favorites"
+    },
+    {
+      "area": "signed-out",
+      "what": "/checkout shows a sign-in prompt",
+      "ok": true,
+      "detail": "Sign in to checkout"
+    },
+    {
+      "area": "signed-out",
+      "what": "persona detail hides Add to Cart when signed out",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "area": "not-found",
+      "what": "unknown persona id shows 'Persona not found'",
+      "ok": true,
+      "detail": "Persona not found"
+    },
+    {
+      "area": "not-found",
+      "what": "unknown route renders something (not blank)",
+      "ok": true,
+      "detail": "Not Found"
+    },
+    {
+      "area": "browse",
+      "what": "all personas listed on load",
+      "ok": true,
+      "detail": "15 cards"
+    },
+    {
+      "area": "browse",
+      "what": "search 'zara' narrows the grid",
+      "ok": true,
+      "detail": "1 cards, url=?q=zara"
+    },
+    {
+      "area": "browse",
+      "what": "no-results state shows message + Clear filters",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "area": "browse",
+      "what": "Clear filters restores all personas and empties search box",
+      "ok": true,
+      "detail": "15 cards, box=''"
+    },
+    {
+      "area": "browse",
+      "what": "Tier=Enterprise filter shows only Enterprise",
+      "ok": false,
+      "detail": "?tier=Enterprise"
+    },
+    {
+      "area": "browse",
+      "what": "sort price-desc (with Enterprise tier)",
+      "ok": true,
+      "detail": "Compliance Carl, Zero-Day Zara, Terraform Tina"
+    },
+    {
+      "area": "browse",
+      "what": "sort rating-desc (with Enterprise tier)",
+      "ok": true,
+      "detail": "Zero-Day Zara, Debug Duchess Dana, Compliance Carl"
+    },
+    {
+      "area": "browse",
+      "what": "sort name-asc (with Enterprise tier)",
+      "ok": true,
+      "detail": "Compliance Carl, Debug Duchess Dana, Terraform Tina"
+    },
+    {
+      "area": "browse",
+      "what": "Back button restores previous filter state",
+      "ok": true,
+      "detail": "url after back=?tier=Enterprise&sort=rating-desc"
+    },
+    {
+      "area": "register",
+      "what": "invalid email (passes browser check, fails zod) shows readable error",
+      "ok": true,
+      "detail": "email: Invalid email"
+    },
+    {
+      "area": "register",
+      "what": "valid registration signs in",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "area": "register",
+      "what": "duplicate email shows 'Email already registered'",
+      "ok": true,
+      "detail": "Email already registered"
+    },
+    {
+      "area": "login",
+      "what": "wrong password shows 'Invalid email or password'",
+      "ok": true,
+      "detail": "Invalid email or password"
+    },
+    {
+      "area": "login",
+      "what": "correct password signs in, lands on /",
+      "ok": true,
+      "detail": "http://localhost:5173/"
+    },
+    {
+      "area": "cart",
+      "what": "3 lines + one '+' gives correct total",
+      "ok": true,
+      "detail": "total=$249.96 expected=$249.96"
+    },
+    {
+      "area": "cart",
+      "what": "badge counts quantities (4)",
+      "ok": true,
+      "detail": "badge=4"
+    },
+    {
+      "area": "checkout",
+      "what": "whitespace name + 'a@b' email is rejected with a readable error",
+      "ok": true,
+      "detail": "email: Invalid email"
+    },
+    {
+      "area": "checkout",
+      "what": "valid order confirms with total",
+      "ok": true,
+      "detail": "Total: $249.96"
+    },
+    {
+      "area": "checkout",
+      "what": "Continue Shopping goes to /",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "area": "favorites",
+      "what": "heart toggles on then off from the detail page",
+      "ok": true,
+      "detail": "on=currentColor off=none"
+    },
+    {
+      "area": "favorites",
+      "what": "favorites empty after toggling off",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "area": "stars",
+      "what": "half-star gradient ids are unique (L3)",
+      "ok": false,
+      "detail": "15 gradients, 14 duplicate ids"
+    }
+  ],
+  "net": [
+    "GET /favorites -> 401",
+    "GET /personas/does-not-exist -> 404",
+    "GET /favorites -> 401",
+    "GET /personas/does-not-exist -> 404",
+    "GET /favorites -> 401",
+    "POST /auth/register -> 400",
+    "POST /auth/register -> 409",
+    "POST /auth/login -> 401",
+    "POST /checkout -> 400"
+  ],
+  "consoleErrs": [
+    "http://localhost:5173/personas/p-002 :: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "http://localhost:5173/personas/does-not-exist :: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "http://localhost:5173/personas/does-not-exist :: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "http://localhost:5173/personas/does-not-exist :: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "http://localhost:5173/personas/does-not-exist :: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "http://localhost:5173/register :: Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "http://localhost:5173/register :: Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "http://localhost:5173/login :: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "http://localhost:5173/checkout :: Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ]
+}

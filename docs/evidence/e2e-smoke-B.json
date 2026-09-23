@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "id": "E3",
+      "step": "after API restart the UI drops the session (no fake 'empty cart')",
+      "ok": true,
+      "detail": "token=null"
+    }
+  ],
+  "net": [
+    "GET /auth/me -> 401",
+    "GET /auth/me -> 401"
+  ],
+  "pageErrors": []
+}
