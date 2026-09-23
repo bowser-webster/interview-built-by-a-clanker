@@ -19,12 +19,12 @@ function PersonaDetailPage() {
     queryFn: () => api.get<Persona>(`/personas/${personaId}`),
   });
 
+  // Same key and cached shape as /favorites ({ favorites: Persona[] });
+  // `select` derives the ids without changing what is stored in the cache.
   const { data: favorites = [] } = useQuery({
     queryKey: ["favorites"],
-    queryFn: async () => {
-      const res = await api.get<{ favorites: Persona[] }>("/favorites");
-      return res.favorites.map((p) => p.id);
-    },
+    queryFn: () => api.get<{ favorites: Persona[] }>("/favorites"),
+    select: (res) => res.favorites.map((p) => p.id),
   });
 
   const isFavorited = favorites.includes(personaId);
@@ -39,7 +39,7 @@ function PersonaDetailPage() {
 
   const toggleFavorite = useMutation({
     mutationFn: () =>
-      !isFavorited
+      isFavorited
         ? api.delete(`/favorites/${personaId}`)
         : api.post("/favorites", { personaId }),
     onSuccess: () => {
